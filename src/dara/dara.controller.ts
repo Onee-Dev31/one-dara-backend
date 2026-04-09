@@ -46,9 +46,15 @@ export class DaraController {
   @Get()
   @ApiOperation({ summary: 'Get all actors (with optional search)' })
   @ApiQuery({ name: 'search', required: false, description: 'ค้นหาชื่อ/ชื่อเล่น' })
+  @ApiQuery({ name: 'page', required: false, description: 'หน้าที่ต้องการ (default: 1)' })
+  @ApiQuery({ name: 'pageSize', required: false, description: 'จำนวนต่อหน้า (default: 20)' })
   @ApiOkResponse({ type: [ActorResponseDto] })
-  findAll(@Query('search') search?: string) {
-    return this.daraService.findAll(search);
+  findAll(
+    @Query('search') search?: string,
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+  ) {
+    return this.daraService.findAll(search, page ? +page : 1, pageSize ? +pageSize : 20);
   }
 
   @Get(':id')

@@ -6,19 +6,33 @@ import { UpdateDaraDto } from './dto/update-dara.dto';
 
 @Injectable()
 export class DaraService {
+  private readonly baseUrl = process.env.BASE_URL ?? 'http://localhost:3000';
+
   constructor(
     private db: DatabaseService,
     private log: LogService,
   ) {}
 
-  async findAll(search?: string) {
-    return this.db.execute('sp_GetActors', { Search: search ?? null });
+  private resolvePhotoUrl(actor: any): any {
+    const filename = actor.IMAGE || `${actor.ACT_ID}.jpg`;
+    return { ...actor, PHOTO_URL: `${this.baseUrl}/uploads/${filename}` };
+  }
+
+  async findAll(search?: string, page = 1, pageSize = 20) {
+    const rows = await this.db.execute('sp_GetActors', {
+      Search: search ?? null,
+      Page: page,
+      PageSize: pageSize,
+    });
+    const total = rows[0]?.TOTAL_COUNT ?? 0;
+    const data = rows.map((r: any) => this.resolvePhotoUrl(r));
+    return { data, total, page, pageSize };
   }
 
   async findOne(id: number) {
     const actor = await this.db.executeFirst('sp_GetActorById', { ACT_ID: id });
     if (!actor) throw new NotFoundException(`Actor #${id} not found`);
-    return actor;
+    return this.resolvePhotoUrl(actor);
   }
 
   async create(dto: CreateDaraDto, userId: number, username: string) {
