@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique @db.NVarChar(100)
+  password   String   @db.NVarChar(255)
+  permission String   @db.NVarChar(50)
+  status     Int      @default(1)
+  createdAt  DateTime @default(now()) @map("create_at")
+
+  @@map("users")
+}
+
+model DaraInfo {
+  id          Int       @id @default(autoincrement()) @map("ID")
+  nameTh      String    @db.NVarChar(255) @map("name_th")
+  surnameTh   String?   @db.NVarChar(255) @map("surname_th")
+  nicknameTh  String?   @db.NVarChar(50)  @map("nickname_th")
+  nameEn      String?   @db.NVarChar(255) @map("name_en")
+  nicknameEn  String?   @db.NVarChar(50)  @map("nickname_en")
+  bDate       DateTime? @map("b_date")
+  sex         String?   @db.NVarChar(20)
+  actors      String?   @db.NVarChar(Max) @map("actors")
+  inhouse     Int       @default(0)
+  height      Float     @default(0)
+  weight      Float     @default(0)
+  acting      String?   @db.NVarChar(Max)
+  education   String?   @db.NVarChar(Max)
+  spacial     String?   @db.NVarChar(Max)
+  sport       String?   @db.NVarChar(Max)
+  facebook    String?   @db.NVarChar(Max)
+  twitter     String?   @db.NVarChar(Max)
+  ig          String?   @db.NVarChar(Max)
+  pinterest   String?   @db.NVarChar(Max)
+  portfolio   String?   @db.NVarChar(Max)
+  otherInfo   String?   @db.NVarChar(Max) @map("other_info")
+  photoStatus Int       @default(0)       @map("photo_status")
+  photo       String?   @db.NVarChar(255)
+  createdAt   DateTime  @default(now())   @map("create_at")
+
+  @@map("dara_info")
+}
