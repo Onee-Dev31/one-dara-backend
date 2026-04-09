@@ -2,8 +2,6 @@ import 'dotenv/config';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { readFileSync, existsSync } from 'fs';
-import { join } from 'path';
 import { AppModule } from './app.module';
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
@@ -30,15 +28,25 @@ async function bootstrap() {
     swaggerOptions: { defaultModelsExpandDepth: -1 },
   });
 
-  // Serve api-docs.html
+  // Serve Redoc UI (สำหรับแชร์ให้ Frontend)
   const httpAdapter = app.getHttpAdapter();
-  const docsPath = join(process.cwd(), 'api-docs.html');
-  if (existsSync(docsPath)) {
-    httpAdapter.get('/api-docs', (_req: any, res: any) => {
-      res.setHeader('Content-Type', 'text/html');
-      res.send(readFileSync(docsPath, 'utf8'));
-    });
-  }
+  httpAdapter.get('/api-docs', (_req: any, res: any) => {
+    res.setHeader('Content-Type', 'text/html');
+    res.send(`<!DOCTYPE html>
+<html>
+  <head>
+    <title>One Dara API Docs</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+    <style>body { margin: 0; padding: 0; }</style>
+  </head>
+  <body>
+    <redoc spec-url="/docs-json"></redoc>
+    <script src="https://cdn.jsdelivr.net/npm/redoc/bundles/redoc.standalone.js"></script>
+  </body>
+</html>`);
+  });
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
