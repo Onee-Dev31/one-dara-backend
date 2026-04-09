@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString, IsNumber, IsDateString, IsInt } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsDateString, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateDaraDto {
   @ApiProperty({ example: 'สมหญิง' })
@@ -23,17 +22,27 @@ export class CreateDaraDto {
   @IsString()
   nameEn?: string;
 
+  @ApiPropertyOptional({ example: 'Jaidee' })
+  @IsOptional()
+  @IsString()
+  surnameEn?: string;
+
   @ApiPropertyOptional({ example: 'Ying' })
   @IsOptional()
   @IsString()
   nicknameEn?: string;
+
+  @ApiPropertyOptional({ example: 'สมหญิง ใจดี' })
+  @IsOptional()
+  @IsString()
+  displayName?: string;
 
   @ApiPropertyOptional({ example: '1995-05-15' })
   @IsOptional()
   @IsDateString()
   bDate?: string;
 
-  @ApiPropertyOptional({ example: 'หญิง' })
+  @ApiPropertyOptional({ example: 'F', description: 'M / F' })
   @IsOptional()
   @IsString()
   sex?: string;
@@ -41,25 +50,7 @@ export class CreateDaraDto {
   @ApiPropertyOptional({ example: 'GMM Grammy' })
   @IsOptional()
   @IsString()
-  actors?: string;
-
-  @ApiPropertyOptional({ example: 1 })
-  @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  inhouse?: number;
-
-  @ApiPropertyOptional({ example: 165 })
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  height?: number;
-
-  @ApiPropertyOptional({ example: 50 })
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  weight?: number;
+  beUnder?: string;
 
   @ApiPropertyOptional({ example: 'นักแสดงนำ' })
   @IsOptional()
@@ -69,45 +60,5 @@ export class CreateDaraDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  education?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  spacial?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  sport?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  facebook?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  twitter?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  ig?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  pinterest?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  portfolio?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  otherInfo?: string;
+  note?: string;
 }

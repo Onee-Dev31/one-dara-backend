@@ -4,45 +4,205 @@ generator client {
 
 datasource db {
   provider = "sqlserver"
+  url      = env("DATABASE_URL")
 }
 
-model User {
-  id         Int      @id @default(autoincrement())
-  username   String   @unique @db.NVarChar(100)
-  password   String   @db.NVarChar(255)
-  permission String   @db.NVarChar(50)
-  status     Int      @default(1)
-  createdAt  DateTime @default(now()) @map("create_at")
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model daraImport {
+  ACT_ID_     Int?
+  FulName_EN_ String?   @db.VarChar(50)
+  FulName_TH_ String?   @db.VarChar(50)
+  F_NAME_TH_  String?   @db.VarChar(50)
+  L_NAME_TH_  String?   @db.VarChar(50)
+  N_NAME_TH_  String?   @db.VarChar(50)
+  B_DATE_     DateTime? @db.Date
+  SEX_        String?   @db.VarChar(50)
+  BE_UNDER_   String?   @db.VarChar(50)
+  ACTING_     String?   @db.VarChar(50)
 
-  @@map("users")
+  @@ignore
 }
 
-model DaraInfo {
-  id          Int       @id @default(autoincrement()) @map("ID")
-  nameTh      String    @db.NVarChar(255) @map("name_th")
-  surnameTh   String?   @db.NVarChar(255) @map("surname_th")
-  nicknameTh  String?   @db.NVarChar(50)  @map("nickname_th")
-  nameEn      String?   @db.NVarChar(255) @map("name_en")
-  nicknameEn  String?   @db.NVarChar(50)  @map("nickname_en")
-  bDate       DateTime? @map("b_date")
-  sex         String?   @db.NVarChar(20)
-  actors      String?   @db.NVarChar(Max) @map("actors")
-  inhouse     Int       @default(0)
-  height      Float     @default(0)
-  weight      Float     @default(0)
-  acting      String?   @db.NVarChar(Max)
-  education   String?   @db.NVarChar(Max)
-  spacial     String?   @db.NVarChar(Max)
-  sport       String?   @db.NVarChar(Max)
-  facebook    String?   @db.NVarChar(Max)
-  twitter     String?   @db.NVarChar(Max)
-  ig          String?   @db.NVarChar(Max)
-  pinterest   String?   @db.NVarChar(Max)
-  portfolio   String?   @db.NVarChar(Max)
-  otherInfo   String?   @db.NVarChar(Max) @map("other_info")
-  photoStatus Int       @default(0)       @map("photo_status")
-  photo       String?   @db.NVarChar(255)
-  createdAt   DateTime  @default(now())   @map("create_at")
+model MT_ACTORS {
+  ACT_ID       Int       @id(map: "PK_MT_ACTORS") @default(autoincrement())
+  F_NAME_TH    String?   @db.VarChar(50)
+  L_NAME_TH    String?   @db.VarChar(50)
+  N_NAME_TH    String?   @db.VarChar(50)
+  DISPLAY_NAME String?   @db.VarChar(100)
+  F_NAME_EN    String?   @db.VarChar(50)
+  L_NAME_EN    String?   @db.VarChar(50)
+  N_NAME_EN    String?   @db.VarChar(50)
+  B_DATE       DateTime? @db.Date
+  SEX          String?   @db.VarChar(5)
+  BE_UNDER     String?   @db.VarChar(50)
+  ACTING       String?   @db.VarChar(100)
+  IMAGE        String?   @db.VarChar(200)
+  NOTE         String?   @db.VarChar(100)
+  IS_DEL       String?   @db.Char(1)
+  CREATE_DATE  DateTime? @db.DateTime
+  CREATE_BY    String?   @db.VarChar(50)
+  UPDATE_DATE  DateTime? @db.DateTime
+  UPDATE_BY    String?   @db.VarChar(50)
+  DELETE_DATE  DateTime? @db.DateTime
+  DELETE_BY    String?   @db.VarChar(50)
+}
 
-  @@map("dara_info")
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model MT_BE_UNDER {
+  ID          Int       @default(autoincrement())
+  BE_UNDER    String?   @db.VarChar(100)
+  IS_DEL      String?   @db.Char(1)
+  CREATE_DATE DateTime? @db.DateTime
+  CREATE_BY   String?   @db.VarChar(50)
+  UPDATE_DATE DateTime? @db.DateTime
+  UPDATE_BY   String?   @db.VarChar(50)
+  DELETE_DATE DateTime? @db.DateTime
+  DELETE_BY   String?   @db.VarChar(50)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model MT_LOG {
+  logX String? @db.VarChar(5000)
+
+  @@ignore
+}
+
+model MT_ROLE {
+  ROLE_ID     Int       @id(map: "PK_MT_ROLE")
+  U_ROLE      String?   @db.VarChar(50)
+  CREATE_DATE DateTime? @db.DateTime
+  CREATE_BY   String?   @db.VarChar(50)
+  UPDATE_DATE DateTime? @db.DateTime
+  UPDATE_BY   String?   @db.VarChar(50)
+  DELETE_DATE DateTime? @db.DateTime
+  DELETE_BY   String?   @db.VarChar(50)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model MT_TAG {
+  TAG_ID      Int       @default(autoincrement())
+  TAG_NAME    String?   @db.VarChar(50)
+  IS_DEL      String?   @db.Char(1)
+  CREATE_DATE DateTime? @db.DateTime
+  CREATE_BY   String?   @db.VarChar(50)
+  UPDATE_DATE DateTime? @db.DateTime
+  UPDATE_BY   String?   @db.VarChar(50)
+  DELETE_DATE DateTime? @db.DateTime
+  DELETE_BY   String?   @db.VarChar(50)
+
+  @@ignore
+}
+
+model MT_USER {
+  U_ID        Int       @id(map: "PK_MT_USER")
+  U_ROLE      String?   @db.VarChar(50)
+  U_NAME      String?   @db.VarChar(50)
+  U_PASS      String?   @db.VarChar(50)
+  U_EMAIL     String?   @db.VarChar(50)
+  LAST_LOGIN  DateTime? @db.DateTime
+  IS_DEL      String?   @db.Char(1)
+  CREATE_DATE DateTime? @db.DateTime
+  CREATE_BY   String?   @db.VarChar(50)
+  UPDATE_DATE DateTime? @db.DateTime
+  UPDATE_BY   String?   @db.VarChar(50)
+  DELETE_DATE DateTime? @db.DateTime
+  DELETE_BY   String?   @db.VarChar(50)
+}
+
+model MT_USER_ROLE {
+  USER_ROLE_ID Int       @id(map: "PK_MT_USER_ROLE") @default(autoincrement())
+  U_ID         Int?
+  ROLE_ID      Int?
+  LAST_LOGIN   DateTime? @db.DateTime
+  IS_ACTIVE    String?   @db.Char(1)
+  CREATE_DATE  DateTime? @db.DateTime
+}
+
+model sysdiagrams {
+  name         String @db.NVarChar(128)
+  principal_id Int
+  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B61860350BE") @default(autoincrement())
+  version      Int?
+  definition   Bytes?
+
+  @@unique([principal_id, name], map: "UK_principal_name")
+}
+
+model TR_CHART {
+  CHART_ID    Int       @id(map: "PK_TR_CHART") @default(autoincrement())
+  CHART_NAME  String?   @db.VarChar(200)
+  IS_DEL      String?   @db.Char(1)
+  CREATE_DATE DateTime? @db.DateTime
+  CREATE_BY   String?   @db.VarChar(50)
+  UPDATE_DATE DateTime? @db.DateTime
+  UPDATE_BY   String?   @db.VarChar(50)
+  DELETE_DATE DateTime? @db.DateTime
+  DELETE_BY   String?   @db.VarChar(50)
+}
+
+model TR_CHART_OPTIONS {
+  OPTION_ID   Int       @id(map: "PK_TR_CHART_OPTIONS") @default(autoincrement())
+  CHART_ID    Int?
+  IS_DEL      String?   @db.Char(1)
+  CREATE_DATE DateTime? @db.DateTime
+  CREATE_BY   String?   @db.VarChar(50)
+  UPDATE_DATE DateTime? @db.DateTime
+  UPDATE_BY   String?   @db.VarChar(50)
+  DELETE_DATE DateTime? @db.DateTime
+  DELETE_BY   String?   @db.VarChar(50)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model TR_FAVORITE_ACTS {
+  U_ID        Int?
+  ACT_ID      Int?
+  CREATE_DATE DateTime? @db.DateTime
+  CREATE_BY   String?   @db.VarChar(50)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model TR_LOG {
+  LOG_ID      Int       @default(autoincrement())
+  U_ID        Int?
+  ACT_ID      Int?
+  DESCRIPTION String?   @db.VarChar(1000)
+  CREATE_DATE DateTime? @db.DateTime
+
+  @@ignore
+}
+
+model TR_OPTIONS_ACT {
+  OPTACT_ID   Int       @id(map: "PK_TR_OPTIONS_ACT") @default(autoincrement())
+  OPTION_ID   Int?
+  ACT_ID      Int?
+  ACTING      String?   @db.VarChar(100)
+  ACT_NAME    String?   @db.VarChar(100)
+  ROW_NO      Int?
+  SEQ_NO      Int?
+  IS_DEL      String?   @db.Char(1)
+  CREATE_DATE DateTime? @db.DateTime
+  CREATE_BY   String?   @db.VarChar(50)
+  UPDATE_DATE DateTime? @db.DateTime
+  UPDATE_BY   String?   @db.VarChar(50)
+  DELETE_DATE DateTime? @db.DateTime
+  DELETE_BY   String?   @db.VarChar(50)
+}
+
+model TR_SHARE_CHART {
+  SHARE_ID    Int       @id(map: "PK_TR_SHARE_CHART") @default(autoincrement())
+  OPTION_ID   Int?
+  U_ID        Int?
+  CAN_VIEW    String?   @db.Char(1)
+  CAN_EDIT    String?   @db.Char(1)
+  IS_DEL      String?   @db.Char(1)
+  CREATE_DATE DateTime? @db.DateTime
+  CREATE_BY   String?   @db.VarChar(50)
+  UPDATE_DATE DateTime? @db.DateTime
+  UPDATE_BY   String?   @db.VarChar(50)
+  DELETE_DATE DateTime? @db.DateTime
+  DELETE_BY   String?   @db.VarChar(50)
 }

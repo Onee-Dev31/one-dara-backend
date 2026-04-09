@@ -1,6 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiErrorResponse } from '../common/dto/api-response.dto';
 import { AuthService } from './auth.service';
+import { LoginResponseDto } from './dto/login-response.dto';
 import { LoginDto } from './dto/login.dto';
 
 @ApiTags('Auth')
@@ -10,6 +12,8 @@ export class AuthController {
 
   @Post('login')
   @ApiOperation({ summary: 'Login and get JWT token' })
+  @ApiOkResponse({ type: LoginResponseDto })
+  @ApiUnauthorizedResponse({ type: ApiErrorResponse, description: 'Invalid credentials' })
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
   }

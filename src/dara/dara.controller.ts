@@ -8,16 +8,31 @@ import {
   Patch,
   Post,
   Query,
+  Request,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ApiErrorResponse } from '../common/dto/api-response.dto';
+import { Roles } from '../common/decorators/roles.decorator';
 import { DaraService } from './dara.service';
+import { ActorResponseDto } from './dto/actor-response.dto';
 import { CreateDaraDto } from './dto/create-dara.dto';
 import { UpdateDaraDto } from './dto/update-dara.dto';
 
@@ -29,45 +44,63 @@ export class DaraController {
   constructor(private daraService: DaraService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all dara (with optional search)' })
-  @ApiQuery({ name: 'search', required: false })
+  @ApiOperation({ summary: 'Get all actors (with optional search)' })
+  @ApiQuery({ name: 'search', required: false, description: 'ค้นหาชื่อ/ชื่อเล่น' })
+  @ApiOkResponse({ type: [ActorResponseDto] })
   findAll(@Query('search') search?: string) {
     return this.daraService.findAll(search);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get dara by ID' })
+  @ApiOperation({ summary: 'Get actor by ID' })
+  @ApiOkResponse({ type: ActorResponseDto })
+  @ApiNotFoundResponse({ type: ApiErrorResponse, description: 'Actor not found' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.daraService.findOne(id);
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create new dara' })
-  create(@Body() dto: CreateDaraDto) {
-    return this.daraService.create(dto);
+  @Roles('admin')
+  @ApiOperation({ summary: 'Create new actor [admin]' })
+  @ApiCreatedResponse({ type: ActorResponseDto })
+  @ApiForbiddenResponse({ type: ApiErrorResponse, description: 'Permission denied' })
+  create(@Body() dto: CreateDaraDto, @Request() req: any) {
+    return this.daraService.create(dto, req.user.id, req.user.username);
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update dara by ID' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateDaraDto) {
-    return this.daraService.update(id, dto);
+  @Roles('admin')
+  @ApiOperation({ summary: 'Update actor by ID [admin]' })
+  @ApiOkResponse({ description: 'Updated successfully' })
+  @ApiNotFoundResponse({ type: ApiErrorResponse, description: 'Actor not found' })
+  @ApiForbiddenResponse({ type: ApiErrorResponse, description: 'Permission denied' })
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateDaraDto, @Request() req: any) {
+    return this.daraService.update(id, dto, req.user.id, req.user.username);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete dara by ID' })
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.daraService.remove(id);
+  @Roles('admin')
+  @ApiOperation({ summary: 'Soft delete actor by ID [admin]' })
+  @ApiOkResponse({ description: 'Deleted successfully' })
+  @ApiNotFoundResponse({ type: ApiErrorResponse, description: 'Actor not found' })
+  @ApiForbiddenResponse({ type: ApiErrorResponse, description: 'Permission denied' })
+  remove(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
+    return this.daraService.remove(id, req.user.id, req.user.username);
   }
 
   @Post(':id/photo')
-  @ApiOperation({ summary: 'Upload photo for dara' })
+  @Roles('admin')
+  @ApiOperation({ summary: 'Upload photo for actor [admin]' })
   @ApiConsumes('multipart/form-data')
+  @ApiBody({ schema: { type: 'object', properties: { file: { type: 'string', format: 'binary' } } } })
+  @ApiOkResponse({ description: 'Photo uploaded successfully' })
+  @ApiNotFoundResponse({ type: ApiErrorResponse, description: 'Actor not found' })
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
         destination: './uploads',
         filename: (_, file, cb) => {
-          const uniqueName = `dara-${Date.now()}${extname(file.originalname)}`;
+          const uniqueName = `actor-${Date.now()}${extname(file.originalname)}`;
           cb(null, uniqueName);
         },
       }),
@@ -80,7 +113,8 @@ export class DaraController {
   uploadPhoto(
     @Param('id', ParseIntPipe) id: number,
     @UploadedFile() file: Express.Multer.File,
+    @Request() req: any,
   ) {
-    return this.daraService.updatePhoto(id, file.filename);
+    return this.daraService.updatePhoto(id, file.filename, req.user.id, req.user.username);
   }
 }
