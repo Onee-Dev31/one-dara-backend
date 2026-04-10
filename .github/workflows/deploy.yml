@@ -36,12 +36,16 @@ jobs:
           $dest = "C:\inetpub\webApps\OneDaraAPI"
           New-Item -ItemType Directory -Force -Path $dest | Out-Null
           Copy-Item -Path "dist" -Destination $dest -Recurse -Force
-          Copy-Item -Path "node_modules" -Destination $dest -Recurse -Force
           Copy-Item -Path "package.json" -Destination $dest -Force
           Copy-Item -Path "web.config" -Destination $dest -Force
           if (Test-Path "uploads") {
             Copy-Item -Path "uploads" -Destination $dest -Recurse -Force
           }
+
+      - name: Install production dependencies on server
+        shell: cmd
+        run: |
+          cd C:\inetpub\webApps\OneDaraAPI && npm install --omit=dev
 
       - name: Start IIS site
         shell: powershell
