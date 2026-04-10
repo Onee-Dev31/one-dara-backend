@@ -27,7 +27,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { extname, resolve } from 'path';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApiErrorResponse } from '../common/dto/api-response.dto';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -104,7 +104,7 @@ export class DaraController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: './uploads',
+        destination: resolve(process.env.UPLOAD_DIR ?? './uploads'),
         filename: (req, file, cb) => {
           const actId = (req as any).params?.id ?? Date.now();
           const uniqueName = `${actId}-${file.originalname}`;

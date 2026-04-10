@@ -1,5 +1,5 @@
 import { existsSync } from 'fs';
-import { join } from 'path';
+import { resolve } from 'path';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { LogService } from '../log/log.service';
@@ -9,7 +9,7 @@ import { UpdateDaraDto } from './dto/update-dara.dto';
 @Injectable()
 export class DaraService {
   private readonly baseUrl = process.env.BASE_URL ?? 'http://localhost:3000';
-  private readonly uploadsDir = join(process.cwd(), 'uploads');
+  private readonly uploadsDir = resolve(process.env.UPLOAD_DIR ?? './uploads');
 
   constructor(
     private db: DatabaseService,
