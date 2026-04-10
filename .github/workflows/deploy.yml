@@ -1,0 +1,48 @@
+name: Deploy to IIS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js path
+        shell: powershell
+        run: |
+          echo "C:\node\node-v22.14.0-win-x64" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Install dependencies
+        shell: powershell
+        run: npm ci --omit=dev
+
+      - name: Build
+        shell: powershell
+        run: npm run build
+
+      - name: Stop IIS site
+        shell: powershell
+        run: Stop-Website -Name "OneDaraAPI"
+
+      - name: Copy files to IIS
+        shell: powershell
+        run: |
+          $dest = "C:\inetpub\webApps\OneDaraAPI"
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
+          Copy-Item -Path "dist" -Destination $dest -Recurse -Force
+          Copy-Item -Path "node_modules" -Destination $dest -Recurse -Force
+          Copy-Item -Path "package.json" -Destination $dest -Force
+          Copy-Item -Path "web.config" -Destination $dest -Force
+          if (Test-Path "uploads") {
+            Copy-Item -Path "uploads" -Destination $dest -Recurse -Force
+          }
+
+      - name: Start IIS site
+        shell: powershell
+        run: Start-Website -Name "OneDaraAPI"
