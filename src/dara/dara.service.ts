@@ -1,3 +1,5 @@
+import { existsSync } from 'fs';
+import { join } from 'path';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { LogService } from '../log/log.service';
@@ -7,6 +9,7 @@ import { UpdateDaraDto } from './dto/update-dara.dto';
 @Injectable()
 export class DaraService {
   private readonly baseUrl = process.env.BASE_URL ?? 'http://localhost:3000';
+  private readonly uploadsDir = join(process.cwd(), 'uploads');
 
   constructor(
     private db: DatabaseService,
@@ -14,7 +17,9 @@ export class DaraService {
   ) {}
 
   private resolvePhotoUrl(actor: any): any {
-    const filename = actor.IMAGE || `${actor.ACT_ID}.jpg`;
+    const candidate = actor.IMAGE || `${actor.ACT_ID}.jpg`;
+    const exists = existsSync(join(this.uploadsDir, candidate));
+    const filename = exists ? candidate : 'no-photo.jpg';
     return { ...actor, PHOTO_URL: `${this.baseUrl}/uploads/${filename}` };
   }
 

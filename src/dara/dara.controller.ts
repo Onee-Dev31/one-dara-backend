@@ -105,8 +105,9 @@ export class DaraController {
     FileInterceptor('file', {
       storage: diskStorage({
         destination: './uploads',
-        filename: (_, file, cb) => {
-          const uniqueName = `actor-${Date.now()}${extname(file.originalname)}`;
+        filename: (req, file, cb) => {
+          const actId = (req as any).params?.id ?? Date.now();
+          const uniqueName = `${actId}-${file.originalname}`;
           cb(null, uniqueName);
         },
       }),
