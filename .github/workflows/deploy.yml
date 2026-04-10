@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         shell: powershell
-        run: npm ci
+        run: npm install
 
       - name: Build
         shell: powershell
