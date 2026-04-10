@@ -20,6 +20,7 @@ export class AuthService {
     }>('sp_Login', { U_NAME: dto.username });
 
     if (!user) {
+      console.log(`---`)
       throw new UnauthorizedException('Invalid credentials');
     }
 
