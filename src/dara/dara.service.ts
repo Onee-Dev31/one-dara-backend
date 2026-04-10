@@ -1,5 +1,5 @@
 import { existsSync } from 'fs';
-import { resolve } from 'path';
+import { join, resolve } from 'path';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { LogService } from '../log/log.service';
