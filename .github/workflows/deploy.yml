@@ -20,11 +20,11 @@ jobs:
 
       - name: Install dependencies
         shell: powershell
-        run: npm ci --omit=dev
+        run: npm ci
 
       - name: Build
         shell: powershell
-        run: npm run build
+        run: npx nest build
 
       - name: Stop IIS site
         shell: powershell
