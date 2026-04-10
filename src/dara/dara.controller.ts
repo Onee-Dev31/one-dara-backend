@@ -107,8 +107,8 @@ export class DaraController {
         destination: resolve(process.env.UPLOAD_DIR ?? './uploads'),
         filename: (req, file, cb) => {
           const actId = (req as any).params?.id ?? Date.now();
-          const uniqueName = `${actId}-${file.originalname}`;
-          cb(null, uniqueName);
+          const ext = extname(file.originalname);
+          cb(null, `${actId}${ext}`);
         },
       }),
       fileFilter: (_, file, cb) => {
@@ -122,6 +122,7 @@ export class DaraController {
     @UploadedFile() file: Express.Multer.File,
     @Request() req: any,
   ) {
+    console.log('uploadPhoto user:', req.user);
     return this.daraService.updatePhoto(id, file.filename, req.user.id, req.user.username);
   }
 }
