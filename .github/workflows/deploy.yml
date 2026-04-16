@@ -42,9 +42,11 @@ jobs:
           # สร้าง backup folder
           New-Item -ItemType Directory -Force -Path $backupPath | Out-Null
 
-          # Backup เฉพาะถ้ามีไฟล์อยู่แล้ว
+          # Backup เฉพาะถ้ามีไฟล์อยู่แล้ว (ข้าม node_modules เพราะ install ใหม่ได้)
           if (Test-Path "$env:DEPLOY_PATH\package.json") {
-            Copy-Item -Path "$env:DEPLOY_PATH\*" -Destination $backupPath -Recurse -Force
+            Get-ChildItem -Path $env:DEPLOY_PATH -Exclude "node_modules" | ForEach-Object {
+              Copy-Item -Path $_.FullName -Destination $backupPath -Recurse -Force
+            }
             Write-Host "Backup saved → $backupPath"
           } else {
             Write-Host "No existing deployment to backup, skipping."
