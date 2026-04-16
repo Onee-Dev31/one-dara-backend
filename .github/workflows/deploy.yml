@@ -9,6 +9,11 @@ jobs:
   deploy:
     runs-on: self-hosted
 
+    env:
+      SITE_NAME: OneDaraAPI
+      DEPLOY_PATH: C:\inetpub\webApps\OneDaraAPI
+      BACKUP_ROOT: C:\inetpub\backups\OneDaraAPI
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,20 +31,51 @@ jobs:
         shell: cmd
         run: npx nest build
 
+      # ─── Backup ───────────────────────────────────────────────────────
+      - name: Backup current deployment
+        id: backup
+        shell: powershell
+        run: |
+          $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+          $backupPath = "$env:BACKUP_ROOT\$timestamp"
+
+          # สร้าง backup folder
+          New-Item -ItemType Directory -Force -Path $backupPath | Out-Null
+
+          # Backup เฉพาะถ้ามีไฟล์อยู่แล้ว
+          if (Test-Path "$env:DEPLOY_PATH\package.json") {
+            Copy-Item -Path "$env:DEPLOY_PATH\*" -Destination $backupPath -Recurse -Force
+            Write-Host "Backup saved → $backupPath"
+          } else {
+            Write-Host "No existing deployment to backup, skipping."
+          }
+
+          # เก็บแค่ 5 backup ล่าสุด
+          $backups = Get-ChildItem -Path $env:BACKUP_ROOT | Sort-Object Name -Descending
+          if ($backups.Count -gt 5) {
+            $backups | Select-Object -Skip 5 | ForEach-Object {
+              Remove-Item -Path $_.FullName -Recurse -Force
+              Write-Host "Removed old backup: $($_.Name)"
+            }
+          }
+
+          # ส่ง backup path ออกไปให้ step ถัดๆ ใช้ restore
+          echo "path=$backupPath" >> $env:GITHUB_OUTPUT
+
+      # ─── Deploy ───────────────────────────────────────────────────────
       - name: Stop IIS site
         shell: powershell
-        run: Stop-Website -Name "OneDaraAPI"
+        run: Stop-Website -Name "$env:SITE_NAME"
 
       - name: Copy files to IIS
         shell: powershell
         run: |
-          $dest = "C:\inetpub\webApps\OneDaraAPI"
-          New-Item -ItemType Directory -Force -Path $dest | Out-Null
-          Copy-Item -Path "dist" -Destination $dest -Recurse -Force
-          Copy-Item -Path "package.json" -Destination $dest -Force
-          Copy-Item -Path "web.config" -Destination $dest -Force
+          New-Item -ItemType Directory -Force -Path $env:DEPLOY_PATH | Out-Null
+          Copy-Item -Path "dist"         -Destination $env:DEPLOY_PATH -Recurse -Force
+          Copy-Item -Path "package.json" -Destination $env:DEPLOY_PATH -Force
+          Copy-Item -Path "web.config"   -Destination $env:DEPLOY_PATH -Force
           if (Test-Path "uploads") {
-            Copy-Item -Path "uploads" -Destination $dest -Recurse -Force
+            Copy-Item -Path "uploads" -Destination $env:DEPLOY_PATH -Recurse -Force
           }
 
       - name: Install production dependencies on server
@@ -49,4 +85,29 @@ jobs:
 
       - name: Start IIS site
         shell: powershell
-        run: Start-Website -Name "OneDaraAPI"
+        run: Start-Website -Name "$env:SITE_NAME"
+
+      # ─── Rollback (เฉพาะเมื่อ deploy fail) ──────────────────────────
+      - name: Rollback from backup
+        if: failure()
+        shell: powershell
+        run: |
+          $backupPath = "${{ steps.backup.outputs.path }}"
+
+          if (-not (Test-Path $backupPath) -or -not (Test-Path "$backupPath\package.json")) {
+            Write-Host "No backup found at $backupPath, cannot rollback."
+            exit 1
+          }
+
+          Write-Host "Deploy failed — rolling back from $backupPath"
+
+          # หยุด site ก่อน (อาจยัง running หรือ crashed)
+          try { Stop-Website -Name "$env:SITE_NAME" } catch {}
+
+          # คืนไฟล์จาก backup
+          Remove-Item -Path "$env:DEPLOY_PATH\*" -Recurse -Force -ErrorAction SilentlyContinue
+          Copy-Item -Path "$backupPath\*" -Destination $env:DEPLOY_PATH -Recurse -Force
+
+          # Start กลับ
+          Start-Website -Name "$env:SITE_NAME"
+          Write-Host "Rollback complete. Site restored to last working version."
