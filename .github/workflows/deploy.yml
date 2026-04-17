@@ -85,6 +85,10 @@ jobs:
         run: |
           cd C:\inetpub\webApps\OneDaraAPI && npm install --omit=dev
 
+      - name: Fix permissions for IIS App Pool
+        shell: powershell
+        run: icacls "$env:DEPLOY_PATH" /grant "IIS AppPool\$env:SITE_NAME:(OI)(CI)M" /T
+
       - name: Start IIS site
         shell: powershell
         run: Start-Website -Name "$env:SITE_NAME"
