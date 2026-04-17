@@ -4,10 +4,9 @@ import * as nodemailer from 'nodemailer';
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
-  private transporter: nodemailer.Transporter;
 
-  constructor() {
-    this.transporter = nodemailer.createTransport({
+  private createTransporter() {
+    return nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT) || 25,
       secure: false,
@@ -21,8 +20,9 @@ export class EmailService {
 
   async sendResetPasswordEmail(toEmail: string, token: string) {
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+    const transporter = this.createTransporter();
 
-    await this.transporter.sendMail({
+    await transporter.sendMail({
       from: `"${process.env.SMTP_SENDER_NAME}" <${process.env.SMTP_FROM}>`,
       to: toEmail,
       subject: 'รีเซ็ตรหัสผ่าน - One Dara',
