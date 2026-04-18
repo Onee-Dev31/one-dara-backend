@@ -87,7 +87,7 @@ jobs:
 
       - name: Fix permissions for IIS App Pool
         shell: powershell
-        run: icacls "$env:DEPLOY_PATH" /grant "IIS AppPool\$env:SITE_NAME:(OI)(CI)M" /T
+        run: icacls "$env:DEPLOY_PATH" /grant "IIS AppPool\$($env:SITE_NAME):(OI)(CI)M" /T
 
       - name: Start IIS site
         shell: powershell
@@ -107,13 +107,10 @@ jobs:
 
           Write-Host "Deploy failed — rolling back from $backupPath"
 
-          # หยุด site ก่อน (อาจยัง running หรือ crashed)
           try { Stop-Website -Name "$env:SITE_NAME" } catch {}
 
-          # คืนไฟล์จาก backup
           Remove-Item -Path "$env:DEPLOY_PATH\*" -Recurse -Force -ErrorAction SilentlyContinue
           Copy-Item -Path "$backupPath\*" -Destination $env:DEPLOY_PATH -Recurse -Force
 
-          # Start กลับ
           Start-Website -Name "$env:SITE_NAME"
           Write-Host "Rollback complete. Site restored to last working version."
