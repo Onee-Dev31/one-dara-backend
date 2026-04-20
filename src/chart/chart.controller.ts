@@ -9,6 +9,7 @@ import { AddActorDto } from './dto/add-actor.dto';
 import { CreateChartDto } from './dto/create-chart.dto';
 import { ShareChartDto } from './dto/share-chart.dto';
 import { UpdateActorPositionDto } from './dto/update-actor-position.dto';
+import { UpdateOptionDto } from './dto/update-option.dto';
 
 @ApiTags('Chart')
 @ApiBearerAuth()
@@ -63,6 +64,16 @@ export class ChartController {
   @ApiOperation({ summary: 'Add option to chart' })
   createOption(@Param('chartId', ParseIntPipe) chartId: number, @Request() req: any) {
     return this.chartService.createOption(chartId, req.user.id, req.user.username);
+  }
+
+  @Patch(':chartId/option/:optionId')
+  @ApiOperation({ summary: 'Update option name' })
+  updateOption(
+    @Param('optionId', ParseIntPipe) optionId: number,
+    @Body() dto: UpdateOptionDto,
+    @Request() req: any,
+  ) {
+    return this.chartService.updateOption(optionId, dto, req.user.id, req.user.username);
   }
 
   @Delete(':chartId/option/:optionId')

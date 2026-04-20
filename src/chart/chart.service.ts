@@ -5,6 +5,7 @@ import { AddActorDto } from './dto/add-actor.dto';
 import { CreateChartDto } from './dto/create-chart.dto';
 import { ShareChartDto } from './dto/share-chart.dto';
 import { UpdateActorPositionDto } from './dto/update-actor-position.dto';
+import { UpdateOptionDto } from './dto/update-option.dto';
 
 @Injectable()
 export class ChartService {
@@ -62,6 +63,15 @@ export class ChartService {
     return this.db.executeFirst('sp_CreateChartOption', {
       CHART_ID:  chartId,
       CREATE_BY: username,
+    });
+  }
+
+  updateOption(optionId: number, dto: UpdateOptionDto, userId: number, username: string) {
+    this.log.log(userId, `แก้ไขชื่อ Option #${optionId}: ${dto.optionName}`);
+    return this.db.executeFirst('sp_UpdateChartOption', {
+      OPTION_ID:   optionId,
+      OPTION_NAME: dto.optionName,
+      UPDATE_BY:   username,
     });
   }
 
