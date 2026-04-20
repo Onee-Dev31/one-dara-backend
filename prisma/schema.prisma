@@ -145,6 +145,7 @@ model TR_CHART {
 model TR_CHART_OPTIONS {
   OPTION_ID   Int       @id(map: "PK_TR_CHART_OPTIONS") @default(autoincrement())
   CHART_ID    Int?
+  OPTION_NAME String?   @db.VarChar(200)
   IS_DEL      String?   @db.Char(1)
   CREATE_DATE DateTime? @db.DateTime
   CREATE_BY   String?   @db.VarChar(50)
