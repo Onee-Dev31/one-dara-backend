@@ -24,7 +24,7 @@ jobs:
       - run: npm ci
 
       - name: Run ESLint
-        run: npx eslint "{src,apps,libs,test}/**/*.ts" --format=compact
+        run: npx eslint "{src,apps,libs,test}/**/*.ts"
 
   # --- Gate 2: Test Coverage >= 80% -----------------------------------------
   test-coverage:
