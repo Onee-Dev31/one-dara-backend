@@ -89,9 +89,19 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.service.ts",
+      "!**/database.service.ts",
+      "!**/email.service.ts",
+      "!**/prisma.service.ts",
+      "!**/*.spec.ts"
     ],
     "coverageDirectory": "../coverage",
+    "coverageReporters": ["text-summary", "json-summary"],
+    "coverageThreshold": {
+      "global": {
+        "lines": 80
+      }
+    },
     "testEnvironment": "node"
   }
 }

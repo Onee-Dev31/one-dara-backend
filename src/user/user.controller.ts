@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -35,7 +46,11 @@ export class UserController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update user role/email [admin]' })
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateUserDto, @Request() req: any) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateUserDto,
+    @Request() req: any,
+  ) {
     return this.userService.update(id, dto, req.user.username);
   }
 
@@ -47,7 +62,11 @@ export class UserController {
 
   @Post(':id/reset-password')
   @ApiOperation({ summary: 'Reset user password [admin]' })
-  resetPassword(@Param('id', ParseIntPipe) id: number, @Body() dto: ResetPasswordDto, @Request() req: any) {
+  resetPassword(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: ResetPasswordDto,
+    @Request() req: any,
+  ) {
     return this.userService.resetPassword(id, dto, req.user.username);
   }
 }

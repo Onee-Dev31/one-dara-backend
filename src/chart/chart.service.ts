@@ -19,7 +19,9 @@ export class ChartService {
   }
 
   async getById(chartId: number) {
-    const chart = await this.db.executeFirst('sp_GetChartById', { CHART_ID: chartId });
+    const chart = await this.db.executeFirst('sp_GetChartById', {
+      CHART_ID: chartId,
+    });
     if (!chart) throw new NotFoundException(`Chart #${chartId} not found`);
     return chart;
   }
@@ -27,18 +29,23 @@ export class ChartService {
   async createChart(dto: CreateChartDto, userId: number, username: string) {
     const result = await this.db.executeFirst('sp_CreateChart', {
       CHART_NAME: dto.chartName,
-      CREATE_BY:  username,
+      CREATE_BY: username,
     });
     this.log.log(userId, `สร้าง Chart: ${dto.chartName}`);
     return result;
   }
 
-  async updateChart(chartId: number, dto: CreateChartDto, userId: number, username: string) {
+  async updateChart(
+    chartId: number,
+    dto: CreateChartDto,
+    userId: number,
+    username: string,
+  ) {
     await this.getById(chartId);
     const result = await this.db.executeFirst('sp_UpdateChart', {
-      CHART_ID:   chartId,
+      CHART_ID: chartId,
       CHART_NAME: dto.chartName,
-      UPDATE_BY:  username,
+      UPDATE_BY: username,
     });
     this.log.log(userId, `แก้ไข Chart #${chartId}: ${dto.chartName}`);
     return result;
@@ -47,7 +54,7 @@ export class ChartService {
   async deleteChart(chartId: number, userId: number, username: string) {
     await this.getById(chartId);
     const result = await this.db.executeFirst('sp_DeleteChart', {
-      CHART_ID:  chartId,
+      CHART_ID: chartId,
       DELETE_BY: username,
     });
     this.log.log(userId, `ลบ Chart #${chartId}`);
@@ -61,17 +68,22 @@ export class ChartService {
   createOption(chartId: number, userId: number, username: string) {
     this.log.log(userId, `เพิ่ม Option ใน Chart #${chartId}`);
     return this.db.executeFirst('sp_CreateChartOption', {
-      CHART_ID:  chartId,
+      CHART_ID: chartId,
       CREATE_BY: username,
     });
   }
 
-  updateOption(optionId: number, dto: UpdateOptionDto, userId: number, username: string) {
+  updateOption(
+    optionId: number,
+    dto: UpdateOptionDto,
+    userId: number,
+    username: string,
+  ) {
     this.log.log(userId, `แก้ไขชื่อ Option #${optionId}: ${dto.optionName}`);
     return this.db.executeFirst('sp_UpdateChartOption', {
-      OPTION_ID:   optionId,
+      OPTION_ID: optionId,
       OPTION_NAME: dto.optionName,
-      UPDATE_BY:   username,
+      UPDATE_BY: username,
     });
   }
 
@@ -87,28 +99,42 @@ export class ChartService {
     return this.db.execute('sp_GetOptionActors', { OPTION_ID: optionId });
   }
 
-  async addActor(optionId: number, dto: AddActorDto, userId: number, username: string) {
+  async addActor(
+    optionId: number,
+    dto: AddActorDto,
+    userId: number,
+    username: string,
+  ) {
     const result = await this.db.executeFirst('sp_AddActorToOption', {
       OPTION_ID: optionId,
-      ACT_ID:    dto.actId,
-      ACTING:    dto.acting,
-      ACT_NAME:  dto.actName,
-      ROW_NO:    dto.rowNo,
-      SEQ_NO:    dto.seqNo,
+      ACT_ID: dto.actId,
+      ACTING: dto.acting,
+      ACT_NAME: dto.actName,
+      ROW_NO: dto.rowNo,
+      SEQ_NO: dto.seqNo,
       CREATE_BY: username,
     });
-    this.log.log(userId, `เพิ่มนักแสดง #${dto.actId} ใน Option #${optionId}`, dto.actId);
+    this.log.log(
+      userId,
+      `เพิ่มนักแสดง #${dto.actId} ใน Option #${optionId}`,
+      dto.actId,
+    );
     return result;
   }
 
-  updateActorPosition(optActId: number, dto: UpdateActorPositionDto, userId: number, username: string) {
+  updateActorPosition(
+    optActId: number,
+    dto: UpdateActorPositionDto,
+    userId: number,
+    username: string,
+  ) {
     this.log.log(userId, `ย้าย position นักแสดง #${optActId}`);
     return this.db.executeFirst('sp_UpdateActorPosition', {
       OPTACT_ID: optActId,
-      ROW_NO:    dto.rowNo,
-      SEQ_NO:    dto.seqNo,
-      ACTING:    dto.acting,
-      ACT_NAME:  dto.actName,
+      ROW_NO: dto.rowNo,
+      SEQ_NO: dto.seqNo,
+      ACTING: dto.acting,
+      ACT_NAME: dto.actName,
       UPDATE_BY: username,
     });
   }
@@ -125,12 +151,17 @@ export class ChartService {
     return this.db.execute('sp_GetSharedCharts', { U_ID: userId });
   }
 
-  async shareChart(optionId: number, dto: ShareChartDto, userId: number, username: string) {
+  async shareChart(
+    optionId: number,
+    dto: ShareChartDto,
+    userId: number,
+    username: string,
+  ) {
     const result = await this.db.executeFirst('sp_ShareChart', {
       OPTION_ID: optionId,
-      U_ID:      dto.userId,
-      CAN_VIEW:  dto.canView ?? '1',
-      CAN_EDIT:  dto.canEdit ?? '0',
+      U_ID: dto.userId,
+      CAN_VIEW: dto.canView ?? '1',
+      CAN_EDIT: dto.canEdit ?? '0',
       CREATE_BY: username,
     });
     this.log.log(userId, `แชร์ Option #${optionId} ให้ User #${dto.userId}`);
@@ -140,7 +171,7 @@ export class ChartService {
   unshareChart(shareId: number, userId: number, username: string) {
     this.log.log(userId, `ยกเลิกแชร์ #${shareId}`);
     return this.db.executeFirst('sp_UnshareChart', {
-      SHARE_ID:  shareId,
+      SHARE_ID: shareId,
       DELETE_BY: username,
     });
   }

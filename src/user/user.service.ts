@@ -20,10 +20,10 @@ export class UserService {
 
   create(dto: CreateUserDto, createdBy: string) {
     return this.db.executeFirst('sp_CreateUser', {
-      U_NAME:    dto.username,
-      U_PASS:    dto.password,
-      U_ROLE:    dto.role,
-      U_EMAIL:   dto.email,
+      U_NAME: dto.username,
+      U_PASS: dto.password,
+      U_ROLE: dto.role,
+      U_EMAIL: dto.email,
       CREATE_BY: createdBy,
     });
   }
@@ -31,9 +31,9 @@ export class UserService {
   async update(id: number, dto: UpdateUserDto, updatedBy: string) {
     await this.getById(id);
     return this.db.executeFirst('sp_UpdateUser', {
-      U_ID:      id,
-      U_ROLE:    dto.role,
-      U_EMAIL:   dto.email,
+      U_ID: id,
+      U_ROLE: dto.role,
+      U_EMAIL: dto.email,
       UPDATE_BY: updatedBy,
     });
   }
@@ -41,7 +41,7 @@ export class UserService {
   async remove(id: number, deletedBy: string) {
     await this.getById(id);
     return this.db.executeFirst('sp_DeleteUser', {
-      U_ID:      id,
+      U_ID: id,
       DELETE_BY: deletedBy,
     });
   }
@@ -49,8 +49,8 @@ export class UserService {
   async resetPassword(id: number, dto: ResetPasswordDto, updatedBy: string) {
     await this.getById(id);
     return this.db.executeFirst('sp_ResetPassword', {
-      U_ID:      id,
-      NEW_PASS:  dto.newPassword,
+      U_ID: id,
+      NEW_PASS: dto.newPassword,
       UPDATE_BY: updatedBy,
     });
   }

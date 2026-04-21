@@ -15,8 +15,8 @@ export class FavoriteService {
 
   async add(userId: number, actId: number, username: string) {
     const result = await this.db.executeFirst('sp_AddFavorite', {
-      U_ID:      userId,
-      ACT_ID:    actId,
+      U_ID: userId,
+      ACT_ID: actId,
       CREATE_BY: username,
     });
     this.log.log(userId, `เพิ่มนักแสดง #${actId} เป็นโปรด`, actId);
@@ -25,7 +25,7 @@ export class FavoriteService {
 
   async remove(userId: number, actId: number) {
     const result = await this.db.executeFirst('sp_RemoveFavorite', {
-      U_ID:   userId,
+      U_ID: userId,
       ACT_ID: actId,
     });
     this.log.log(userId, `ลบนักแสดง #${actId} ออกจากโปรด`, actId);

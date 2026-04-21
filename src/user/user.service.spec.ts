@@ -5,17 +5,19 @@ import { UserService } from './user.service';
 
 const mockDb = { execute: jest.fn(), executeFirst: jest.fn() };
 
-const mockUser = { U_ID: 1, U_NAME: 'admin', U_ROLE: 'admin', U_EMAIL: 'admin@example.com' };
+const mockUser = {
+  U_ID: 1,
+  U_NAME: 'admin',
+  U_ROLE: 'admin',
+  U_EMAIL: 'admin@example.com',
+};
 
 describe('UserService', () => {
   let service: UserService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        UserService,
-        { provide: DatabaseService, useValue: mockDb },
-      ],
+      providers: [UserService, { provide: DatabaseService, useValue: mockDb }],
     }).compile();
 
     service = module.get<UserService>(UserService);
@@ -39,7 +41,9 @@ describe('UserService', () => {
 
       const result = await service.getById(1);
 
-      expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_GetUserById', { U_ID: 1 });
+      expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_GetUserById', {
+        U_ID: 1,
+      });
       expect(result).toEqual(mockUser);
     });
 
@@ -54,12 +58,20 @@ describe('UserService', () => {
     it('สร้าง user — call SP ถูก param', async () => {
       mockDb.executeFirst.mockResolvedValue({ U_ID: 2 });
 
-      const dto = { username: 'john', password: 'pass123', role: 'user', email: 'john@test.com' };
+      const dto = {
+        username: 'john',
+        password: 'pass123',
+        role: 'user',
+        email: 'john@test.com',
+      };
       const result = await service.create(dto, 'admin');
 
       expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_CreateUser', {
-        U_NAME: 'john', U_PASS: 'pass123', U_ROLE: 'user',
-        U_EMAIL: 'john@test.com', CREATE_BY: 'admin',
+        U_NAME: 'john',
+        U_PASS: 'pass123',
+        U_ROLE: 'user',
+        U_EMAIL: 'john@test.com',
+        CREATE_BY: 'admin',
       });
       expect(result).toEqual({ U_ID: 2 });
     });
@@ -71,17 +83,26 @@ describe('UserService', () => {
         .mockResolvedValueOnce(mockUser)
         .mockResolvedValueOnce({ AffectedRows: 1 });
 
-      await service.update(1, { role: 'admin', email: 'new@test.com' }, 'superadmin');
+      await service.update(
+        1,
+        { role: 'admin', email: 'new@test.com' },
+        'superadmin',
+      );
 
       expect(mockDb.executeFirst).toHaveBeenNthCalledWith(2, 'sp_UpdateUser', {
-        U_ID: 1, U_ROLE: 'admin', U_EMAIL: 'new@test.com', UPDATE_BY: 'superadmin',
+        U_ID: 1,
+        U_ROLE: 'admin',
+        U_EMAIL: 'new@test.com',
+        UPDATE_BY: 'superadmin',
       });
     });
 
     it('แก้ไข user — ไม่พบ → NotFoundException', async () => {
       mockDb.executeFirst.mockResolvedValue(null);
 
-      await expect(service.update(999, {}, 'admin')).rejects.toThrow(NotFoundException);
+      await expect(service.update(999, {}, 'admin')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -94,14 +115,17 @@ describe('UserService', () => {
       await service.remove(1, 'admin');
 
       expect(mockDb.executeFirst).toHaveBeenNthCalledWith(2, 'sp_DeleteUser', {
-        U_ID: 1, DELETE_BY: 'admin',
+        U_ID: 1,
+        DELETE_BY: 'admin',
       });
     });
 
     it('ลบ user — ไม่พบ → NotFoundException', async () => {
       mockDb.executeFirst.mockResolvedValue(null);
 
-      await expect(service.remove(999, 'admin')).rejects.toThrow(NotFoundException);
+      await expect(service.remove(999, 'admin')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -113,16 +137,23 @@ describe('UserService', () => {
 
       await service.resetPassword(1, { newPassword: 'newpass123' }, 'admin');
 
-      expect(mockDb.executeFirst).toHaveBeenNthCalledWith(2, 'sp_ResetPassword', {
-        U_ID: 1, NEW_PASS: 'newpass123', UPDATE_BY: 'admin',
-      });
+      expect(mockDb.executeFirst).toHaveBeenNthCalledWith(
+        2,
+        'sp_ResetPassword',
+        {
+          U_ID: 1,
+          NEW_PASS: 'newpass123',
+          UPDATE_BY: 'admin',
+        },
+      );
     });
 
     it('reset password — ไม่พบ user → NotFoundException', async () => {
       mockDb.executeFirst.mockResolvedValue(null);
 
-      await expect(service.resetPassword(999, { newPassword: 'x' }, 'admin'))
-        .rejects.toThrow(NotFoundException);
+      await expect(
+        service.resetPassword(999, { newPassword: 'x' }, 'admin'),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });

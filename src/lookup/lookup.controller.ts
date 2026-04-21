@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -23,7 +34,15 @@ export class LookupController {
 
   @Get('be-under')
   @ApiOperation({ summary: 'Get all be-under (สังกัด)' })
-  @ApiOkResponse({ description: 'List of be-under', schema: { type: 'array', items: { properties: { ID: { type: 'number' }, BE_UNDER: { type: 'string' } } } } })
+  @ApiOkResponse({
+    description: 'List of be-under',
+    schema: {
+      type: 'array',
+      items: {
+        properties: { ID: { type: 'number' }, BE_UNDER: { type: 'string' } },
+      },
+    },
+  })
   getBeUnders() {
     return this.lookupService.getBeUnders();
   }
@@ -31,7 +50,10 @@ export class LookupController {
   @Post('be-under')
   @Roles('admin')
   @ApiOperation({ summary: 'Create be-under [admin]' })
-  @ApiCreatedResponse({ description: 'Created', schema: { properties: { ID: { type: 'number' } } } })
+  @ApiCreatedResponse({
+    description: 'Created',
+    schema: { properties: { ID: { type: 'number' } } },
+  })
   @ApiForbiddenResponse({ type: ApiErrorResponse })
   createBeUnder(@Body() dto: CreateBeUnderDto, @Request() req: any) {
     return this.lookupService.createBeUnder(dto, req.user.username);
@@ -42,7 +64,11 @@ export class LookupController {
   @ApiOperation({ summary: 'Update be-under [admin]' })
   @ApiOkResponse({ description: 'Updated successfully' })
   @ApiForbiddenResponse({ type: ApiErrorResponse })
-  updateBeUnder(@Param('id', ParseIntPipe) id: number, @Body() dto: CreateBeUnderDto, @Request() req: any) {
+  updateBeUnder(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: CreateBeUnderDto,
+    @Request() req: any,
+  ) {
     return this.lookupService.updateBeUnder(id, dto, req.user.username);
   }
 
@@ -57,7 +83,18 @@ export class LookupController {
 
   @Get('tag')
   @ApiOperation({ summary: 'Get all tags' })
-  @ApiOkResponse({ description: 'List of tags', schema: { type: 'array', items: { properties: { TAG_ID: { type: 'number' }, TAG_NAME: { type: 'string' } } } } })
+  @ApiOkResponse({
+    description: 'List of tags',
+    schema: {
+      type: 'array',
+      items: {
+        properties: {
+          TAG_ID: { type: 'number' },
+          TAG_NAME: { type: 'string' },
+        },
+      },
+    },
+  })
   getTags() {
     return this.lookupService.getTags();
   }
@@ -65,7 +102,10 @@ export class LookupController {
   @Post('tag')
   @Roles('admin')
   @ApiOperation({ summary: 'Create tag [admin]' })
-  @ApiCreatedResponse({ description: 'Created', schema: { properties: { TAG_ID: { type: 'number' } } } })
+  @ApiCreatedResponse({
+    description: 'Created',
+    schema: { properties: { TAG_ID: { type: 'number' } } },
+  })
   @ApiForbiddenResponse({ type: ApiErrorResponse })
   createTag(@Body() dto: CreateTagDto, @Request() req: any) {
     return this.lookupService.createTag(dto, req.user.username);
@@ -76,7 +116,11 @@ export class LookupController {
   @ApiOperation({ summary: 'Update tag [admin]' })
   @ApiOkResponse({ description: 'Updated successfully' })
   @ApiForbiddenResponse({ type: ApiErrorResponse })
-  updateTag(@Param('id', ParseIntPipe) id: number, @Body() dto: CreateTagDto, @Request() req: any) {
+  updateTag(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: CreateTagDto,
+    @Request() req: any,
+  ) {
     return this.lookupService.updateTag(id, dto, req.user.username);
   }
 

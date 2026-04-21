@@ -28,7 +28,9 @@ describe('FavoriteService', () => {
 
       const result = await service.getMyFavorites(1);
 
-      expect(mockDb.execute).toHaveBeenCalledWith('sp_GetFavorites', { U_ID: 1 });
+      expect(mockDb.execute).toHaveBeenCalledWith('sp_GetFavorites', {
+        U_ID: 1,
+      });
       expect(result).toHaveLength(2);
     });
   });
@@ -40,9 +42,15 @@ describe('FavoriteService', () => {
       await service.add(1, 5, 'user1');
 
       expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_AddFavorite', {
-        U_ID: 1, ACT_ID: 5, CREATE_BY: 'user1',
+        U_ID: 1,
+        ACT_ID: 5,
+        CREATE_BY: 'user1',
       });
-      expect(mockLog.log).toHaveBeenCalledWith(1, expect.stringContaining('#5'), 5);
+      expect(mockLog.log).toHaveBeenCalledWith(
+        1,
+        expect.stringContaining('#5'),
+        5,
+      );
     });
   });
 
@@ -53,9 +61,14 @@ describe('FavoriteService', () => {
       await service.remove(1, 5);
 
       expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_RemoveFavorite', {
-        U_ID: 1, ACT_ID: 5,
+        U_ID: 1,
+        ACT_ID: 5,
       });
-      expect(mockLog.log).toHaveBeenCalledWith(1, expect.stringContaining('#5'), 5);
+      expect(mockLog.log).toHaveBeenCalledWith(
+        1,
+        expect.stringContaining('#5'),
+        5,
+      );
     });
   });
 });

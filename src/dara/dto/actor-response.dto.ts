@@ -40,7 +40,9 @@ export class ActorResponseDto {
   @ApiPropertyOptional({ example: 'actor-1234567890.jpg' })
   IMAGE: string;
 
-  @ApiPropertyOptional({ example: 'http://localhost:3000/uploads/actor-1234567890.jpg' })
+  @ApiPropertyOptional({
+    example: 'http://localhost:3000/uploads/actor-1234567890.jpg',
+  })
   PHOTO_URL: string;
 
   @ApiPropertyOptional({ example: 'หมายเหตุ' })

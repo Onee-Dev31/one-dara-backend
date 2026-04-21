@@ -31,7 +31,9 @@ describe('ChartService', () => {
 
       const result = await service.getMyCharts(1);
 
-      expect(mockDb.execute).toHaveBeenCalledWith('sp_GetMyCharts', { U_ID: 1 });
+      expect(mockDb.execute).toHaveBeenCalledWith('sp_GetMyCharts', {
+        U_ID: 1,
+      });
       expect(result).toHaveLength(1);
     });
   });
@@ -59,9 +61,13 @@ describe('ChartService', () => {
       await service.createChart({ chartName: 'Chart ใหม่' }, 1, 'admin');
 
       expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_CreateChart', {
-        CHART_NAME: 'Chart ใหม่', CREATE_BY: 'admin',
+        CHART_NAME: 'Chart ใหม่',
+        CREATE_BY: 'admin',
       });
-      expect(mockLog.log).toHaveBeenCalledWith(1, expect.stringContaining('Chart ใหม่'));
+      expect(mockLog.log).toHaveBeenCalledWith(
+        1,
+        expect.stringContaining('Chart ใหม่'),
+      );
     });
   });
 
@@ -74,7 +80,9 @@ describe('ChartService', () => {
       await service.updateChart(1, { chartName: 'Chart แก้ไข' }, 1, 'admin');
 
       expect(mockDb.executeFirst).toHaveBeenNthCalledWith(2, 'sp_UpdateChart', {
-        CHART_ID: 1, CHART_NAME: 'Chart แก้ไข', UPDATE_BY: 'admin',
+        CHART_ID: 1,
+        CHART_NAME: 'Chart แก้ไข',
+        UPDATE_BY: 'admin',
       });
       expect(mockLog.log).toHaveBeenCalled();
     });
@@ -82,8 +90,9 @@ describe('ChartService', () => {
     it('แก้ไข chart — ไม่พบ → NotFoundException', async () => {
       mockDb.executeFirst.mockResolvedValue(null);
 
-      await expect(service.updateChart(999, { chartName: 'x' }, 1, 'admin'))
-        .rejects.toThrow(NotFoundException);
+      await expect(
+        service.updateChart(999, { chartName: 'x' }, 1, 'admin'),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -96,14 +105,17 @@ describe('ChartService', () => {
       await service.deleteChart(1, 1, 'admin');
 
       expect(mockDb.executeFirst).toHaveBeenNthCalledWith(2, 'sp_DeleteChart', {
-        CHART_ID: 1, DELETE_BY: 'admin',
+        CHART_ID: 1,
+        DELETE_BY: 'admin',
       });
     });
 
     it('ลบ chart — ไม่พบ → NotFoundException', async () => {
       mockDb.executeFirst.mockResolvedValue(null);
 
-      await expect(service.deleteChart(999, 1, 'admin')).rejects.toThrow(NotFoundException);
+      await expect(service.deleteChart(999, 1, 'admin')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -113,7 +125,9 @@ describe('ChartService', () => {
 
       const result = await service.getOptions(1);
 
-      expect(mockDb.execute).toHaveBeenCalledWith('sp_GetChartOptions', { CHART_ID: 1 });
+      expect(mockDb.execute).toHaveBeenCalledWith('sp_GetChartOptions', {
+        CHART_ID: 1,
+      });
       expect(result).toHaveLength(1);
     });
   });
@@ -125,10 +139,19 @@ describe('ChartService', () => {
       const dto = { actId: 5, acting: 'นักแสดงนำ', rowNo: 1, seqNo: 1 } as any;
       await service.addActor(2, dto, 1, 'admin');
 
-      expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_AddActorToOption', expect.objectContaining({
-        OPTION_ID: 2, ACT_ID: 5, ACTING: 'นักแสดงนำ',
-      }));
-      expect(mockLog.log).toHaveBeenCalledWith(1, expect.stringContaining('#5'), 5);
+      expect(mockDb.executeFirst).toHaveBeenCalledWith(
+        'sp_AddActorToOption',
+        expect.objectContaining({
+          OPTION_ID: 2,
+          ACT_ID: 5,
+          ACTING: 'นักแสดงนำ',
+        }),
+      );
+      expect(mockLog.log).toHaveBeenCalledWith(
+        1,
+        expect.stringContaining('#5'),
+        5,
+      );
     });
   });
 
@@ -139,18 +162,31 @@ describe('ChartService', () => {
       await service.shareChart(1, { userId: 2 }, 1, 'admin');
 
       expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_ShareChart', {
-        OPTION_ID: 1, U_ID: 2, CAN_VIEW: '1', CAN_EDIT: '0', CREATE_BY: 'admin',
+        OPTION_ID: 1,
+        U_ID: 2,
+        CAN_VIEW: '1',
+        CAN_EDIT: '0',
+        CREATE_BY: 'admin',
       });
     });
 
     it('แชร์ option — กำหนด permission เอง', async () => {
       mockDb.executeFirst.mockResolvedValue({ AffectedRows: 1 });
 
-      await service.shareChart(1, { userId: 2, canView: '1', canEdit: '1' }, 1, 'admin');
+      await service.shareChart(
+        1,
+        { userId: 2, canView: '1', canEdit: '1' },
+        1,
+        'admin',
+      );
 
-      expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_ShareChart', expect.objectContaining({
-        CAN_VIEW: '1', CAN_EDIT: '1',
-      }));
+      expect(mockDb.executeFirst).toHaveBeenCalledWith(
+        'sp_ShareChart',
+        expect.objectContaining({
+          CAN_VIEW: '1',
+          CAN_EDIT: '1',
+        }),
+      );
     });
   });
 
@@ -160,7 +196,9 @@ describe('ChartService', () => {
 
       const result = await service.getSharedCharts(1);
 
-      expect(mockDb.execute).toHaveBeenCalledWith('sp_GetSharedCharts', { U_ID: 1 });
+      expect(mockDb.execute).toHaveBeenCalledWith('sp_GetSharedCharts', {
+        U_ID: 1,
+      });
       expect(result).toHaveLength(1);
     });
   });

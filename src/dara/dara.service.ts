@@ -42,41 +42,50 @@ export class DaraService {
 
   async create(dto: CreateDaraDto, userId: number, username: string) {
     const result = await this.db.executeFirst('sp_CreateActor', {
-      F_NAME_TH:    dto.nameTh,
-      L_NAME_TH:    dto.surnameTh,
-      N_NAME_TH:    dto.nicknameTh,
-      F_NAME_EN:    dto.nameEn,
-      L_NAME_EN:    dto.surnameEn,
-      N_NAME_EN:    dto.nicknameEn,
+      F_NAME_TH: dto.nameTh,
+      L_NAME_TH: dto.surnameTh,
+      N_NAME_TH: dto.nicknameTh,
+      F_NAME_EN: dto.nameEn,
+      L_NAME_EN: dto.surnameEn,
+      N_NAME_EN: dto.nicknameEn,
       DISPLAY_NAME: dto.displayName,
-      B_DATE:       dto.bDate ? new Date(dto.bDate) : null,
-      SEX:          dto.sex,
-      BE_UNDER:     dto.beUnder,
-      ACTING:       dto.acting,
-      NOTE:         dto.note,
-      CREATE_BY:    username,
+      B_DATE: dto.bDate ? new Date(dto.bDate) : null,
+      SEX: dto.sex,
+      BE_UNDER: dto.beUnder,
+      ACTING: dto.acting,
+      NOTE: dto.note,
+      CREATE_BY: username,
     });
-    this.log.log(userId, `เพิ่มนักแสดง: ${dto.displayName ?? dto.nameTh}`, result?.ACT_ID);
+    this.log.log(
+      userId,
+      `เพิ่มนักแสดง: ${dto.displayName ?? dto.nameTh}`,
+      result?.ACT_ID,
+    );
     return result;
   }
 
-  async update(id: number, dto: UpdateDaraDto, userId: number, username: string) {
+  async update(
+    id: number,
+    dto: UpdateDaraDto,
+    userId: number,
+    username: string,
+  ) {
     await this.findOne(id);
     const result = await this.db.executeFirst('sp_UpdateActor', {
-      ACT_ID:       id,
-      F_NAME_TH:    dto.nameTh,
-      L_NAME_TH:    dto.surnameTh,
-      N_NAME_TH:    dto.nicknameTh,
-      F_NAME_EN:    dto.nameEn,
-      L_NAME_EN:    dto.surnameEn,
-      N_NAME_EN:    dto.nicknameEn,
+      ACT_ID: id,
+      F_NAME_TH: dto.nameTh,
+      L_NAME_TH: dto.surnameTh,
+      N_NAME_TH: dto.nicknameTh,
+      F_NAME_EN: dto.nameEn,
+      L_NAME_EN: dto.surnameEn,
+      N_NAME_EN: dto.nicknameEn,
       DISPLAY_NAME: dto.displayName,
-      B_DATE:       dto.bDate ? new Date(dto.bDate) : null,
-      SEX:          dto.sex,
-      BE_UNDER:     dto.beUnder,
-      ACTING:       dto.acting,
-      NOTE:         dto.note,
-      UPDATE_BY:    username,
+      B_DATE: dto.bDate ? new Date(dto.bDate) : null,
+      SEX: dto.sex,
+      BE_UNDER: dto.beUnder,
+      ACTING: dto.acting,
+      NOTE: dto.note,
+      UPDATE_BY: username,
     });
     this.log.log(userId, `แก้ไขนักแสดง #${id}`, id);
     return result;
@@ -85,18 +94,23 @@ export class DaraService {
   async remove(id: number, userId: number, username: string) {
     await this.findOne(id);
     const result = await this.db.executeFirst('sp_DeleteActor', {
-      ACT_ID:    id,
+      ACT_ID: id,
       DELETE_BY: username,
     });
     this.log.log(userId, `ลบนักแสดง #${id}`, id);
     return result;
   }
 
-  async updatePhoto(id: number, filename: string, userId: number, username: string) {
+  async updatePhoto(
+    id: number,
+    filename: string,
+    userId: number,
+    username: string,
+  ) {
     await this.findOne(id);
     const result = await this.db.executeFirst('sp_UpdateActorPhoto', {
-      ACT_ID:    id,
-      IMAGE:     filename,
+      ACT_ID: id,
+      IMAGE: filename,
       UPDATE_BY: username,
     });
     this.log.log(userId, `อัปเดตรูปนักแสดง #${id}`, id);
