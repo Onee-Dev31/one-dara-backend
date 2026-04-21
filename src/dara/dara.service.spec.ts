@@ -38,8 +38,10 @@ describe('DaraService', () => {
 
       expect(mockDb.execute).toHaveBeenCalledWith('sp_GetActors', {
         Search: null,
+        Page: 1,
+        PageSize: 20,
       });
-      expect(result).toHaveLength(1);
+      expect(result.data).toHaveLength(1);
     });
 
     it('ดึงรายการ — มี search', async () => {
@@ -49,6 +51,8 @@ describe('DaraService', () => {
 
       expect(mockDb.execute).toHaveBeenCalledWith('sp_GetActors', {
         Search: 'สมหญิง',
+        Page: 1,
+        PageSize: 20,
       });
     });
   });
@@ -64,7 +68,8 @@ describe('DaraService', () => {
       expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_GetActorById', {
         ACT_ID: 1,
       });
-      expect(result).toEqual(actor);
+      expect(result).toMatchObject({ ACT_ID: 1, F_NAME_TH: 'สมหญิง' });
+      expect(result).toHaveProperty('PHOTO_URL');
     });
 
     it('ดึงรายคน — ไม่พบ → NotFoundException', async () => {

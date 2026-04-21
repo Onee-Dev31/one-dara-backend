@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DatabaseService } from '../database/database.service';
 import { AuthService } from './auth.service';
+import { EmailService } from './email.service';
 
 const mockDb = {
   executeFirst: jest.fn(),
@@ -10,6 +11,10 @@ const mockDb = {
 
 const mockJwt = {
   sign: jest.fn().mockReturnValue('mock-token'),
+};
+
+const mockEmail = {
+  sendPasswordResetEmail: jest.fn(),
 };
 
 const mockUser = {
@@ -29,6 +34,7 @@ describe('AuthService', () => {
         AuthService,
         { provide: DatabaseService, useValue: mockDb },
         { provide: JwtService, useValue: mockJwt },
+        { provide: EmailService, useValue: mockEmail },
       ],
     }).compile();
 
