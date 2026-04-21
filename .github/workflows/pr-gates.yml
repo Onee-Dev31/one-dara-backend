@@ -46,19 +46,27 @@ jobs:
       - name: Run tests with coverage
         id: cov
         run: |
-          npm run test:cov -- --coverageReporters=text-summary 2>&1 | tee coverage.txt || true
+          npm run test:cov 2>&1 | tee test-output.txt || true
 
-          SUMMARY=$(grep -E "^(Statements|Branches|Functions|Lines)" coverage.txt || echo "No coverage data")
-          SUMMARY_ENCODED=$(echo "$SUMMARY" | tr '\n' '|')
-          echo "summary=$SUMMARY_ENCODED" >> "$GITHUB_OUTPUT"
-
-          LINES_PCT=$(grep "^Lines" coverage.txt | grep -oE '[0-9]+\.[0-9]+' | head -1 || echo "0")
-          echo "lines_pct=$LINES_PCT" >> "$GITHUB_OUTPUT"
-
-          if grep -q "^FAIL" coverage.txt; then
+          if grep -q "^FAIL" test-output.txt; then
             echo "Tests failed"
             exit 1
           fi
+
+          SUMMARY_JSON="coverage/coverage-summary.json"
+          if [ ! -f "$SUMMARY_JSON" ]; then
+            echo "coverage-summary.json not found"
+            exit 1
+          fi
+
+          LINES_PCT=$(python3 -c "import json; d=json.load(open('$SUMMARY_JSON'))['total']; print(d['lines']['pct'])")
+          STMTS_PCT=$(python3 -c "import json; d=json.load(open('$SUMMARY_JSON'))['total']; print(d['statements']['pct'])")
+          BRANCH_PCT=$(python3 -c "import json; d=json.load(open('$SUMMARY_JSON'))['total']; print(d['branches']['pct'])")
+          FUNCS_PCT=$(python3 -c "import json; d=json.load(open('$SUMMARY_JSON'))['total']; print(d['functions']['pct'])")
+
+          echo "lines_pct=$LINES_PCT" >> "$GITHUB_OUTPUT"
+          SUMMARY_ENCODED="Statements: ${STMTS_PCT}% | Branches: ${BRANCH_PCT}% | Functions: ${FUNCS_PCT}% | Lines: ${LINES_PCT}%"
+          echo "summary=$SUMMARY_ENCODED" >> "$GITHUB_OUTPUT"
 
           LINES_INT=$(echo "$LINES_PCT" | cut -d. -f1)
           if [ "${LINES_INT:-0}" -lt 80 ]; then
@@ -105,7 +113,7 @@ jobs:
 
             const icon = (ok) => ok ? '✅' : '❌';
             const linesPct   = '${{ needs.test-coverage.outputs.lines_pct }}';
-            const covSummary = (process.env.COV_SUMMARY || 'ไม่มีข้อมูล').replace(/\|/g, '\n');
+            const covSummary = process.env.COV_SUMMARY || 'ไม่มีข้อมูล';
 
             const body = [
               `## ${allOk ? '🟢' : '🔴'} PR Gates Report`,
