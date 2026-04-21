@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 import * as sql from 'mssql';
 
 function parseConnectionUrl(url: string): sql.config {
@@ -44,7 +49,9 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   async onModuleInit() {
     const config = parseConnectionUrl(process.env.DATABASE_URL || '');
     this.pool = await new sql.ConnectionPool(config).connect();
-    this.logger.log(`Database connected → ${config.server}:${config.port}/${config.database}`);
+    this.logger.log(
+      `Database connected → ${config.server}:${config.port}/${config.database}`,
+    );
   }
 
   async onModuleDestroy() {
@@ -52,7 +59,10 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     this.logger.log('Database disconnected');
   }
 
-  async execute<T = any>(spName: string, params?: Record<string, any>): Promise<T[]> {
+  async execute<T = any>(
+    spName: string,
+    params?: Record<string, any>,
+  ): Promise<T[]> {
     const request = this.pool.request();
     if (params) {
       for (const [key, value] of Object.entries(params)) {
@@ -65,7 +75,10 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     return result.recordset as T[];
   }
 
-  async executeFirst<T = any>(spName: string, params?: Record<string, any>): Promise<T | null> {
+  async executeFirst<T = any>(
+    spName: string,
+    params?: Record<string, any>,
+  ): Promise<T | null> {
     const rows = await this.execute<T>(spName, params);
     return rows[0] ?? null;
   }

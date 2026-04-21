@@ -13,10 +13,10 @@ const mockJwt = {
 };
 
 const mockUser = {
-  U_ID:    1,
-  U_NAME:  'admin',
-  U_PASS:  'password123',
-  U_ROLE:  'admin',
+  U_ID: 1,
+  U_NAME: 'admin',
+  U_PASS: 'password123',
+  U_ROLE: 'admin',
   U_EMAIL: 'admin@example.com',
 };
 
@@ -40,41 +40,51 @@ describe('AuthService', () => {
     it('login สำเร็จ — คืน token และ user info', async () => {
       mockDb.executeFirst.mockResolvedValue(mockUser);
 
-      const result = await service.login({ username: 'admin', password: 'password123' });
-
-      expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_Login', { U_NAME: 'admin' });
-      expect(mockJwt.sign).toHaveBeenCalledWith({
-        sub:      1,
+      const result = await service.login({
         username: 'admin',
-        role:     'admin',
+        password: 'password123',
+      });
+
+      expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_Login', {
+        U_NAME: 'admin',
+      });
+      expect(mockJwt.sign).toHaveBeenCalledWith({
+        sub: 1,
+        username: 'admin',
+        role: 'admin',
       });
       expect(result.access_token).toBe('mock-token');
       expect(result.user).toEqual({
-        id:       1,
+        id: 1,
         username: 'admin',
-        role:     'admin',
-        email:    'admin@example.com',
+        role: 'admin',
+        email: 'admin@example.com',
       });
     });
 
     it('login — ไม่พบ user → UnauthorizedException', async () => {
       mockDb.executeFirst.mockResolvedValue(null);
 
-      await expect(service.login({ username: 'noone', password: 'pass' }))
-        .rejects.toThrow(UnauthorizedException);
+      await expect(
+        service.login({ username: 'noone', password: 'pass' }),
+      ).rejects.toThrow(UnauthorizedException);
     });
 
     it('login — password ผิด → UnauthorizedException', async () => {
       mockDb.executeFirst.mockResolvedValue(mockUser);
 
-      await expect(service.login({ username: 'admin', password: 'wrongpass' }))
-        .rejects.toThrow(UnauthorizedException);
+      await expect(
+        service.login({ username: 'admin', password: 'wrongpass' }),
+      ).rejects.toThrow(UnauthorizedException);
     });
 
     it('login — ไม่ return password ออกไปใน response', async () => {
       mockDb.executeFirst.mockResolvedValue(mockUser);
 
-      const result = await service.login({ username: 'admin', password: 'password123' });
+      const result = await service.login({
+        username: 'admin',
+        password: 'password123',
+      });
 
       expect(result.user).not.toHaveProperty('password');
       expect(result.user).not.toHaveProperty('U_PASS');

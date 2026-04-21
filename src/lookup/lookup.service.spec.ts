@@ -38,7 +38,8 @@ describe('LookupService', () => {
       await service.createBeUnder({ beUnder: 'GMM Grammy' }, 'admin');
 
       expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_CreateBeUnder', {
-        BE_UNDER: 'GMM Grammy', CREATE_BY: 'admin',
+        BE_UNDER: 'GMM Grammy',
+        CREATE_BY: 'admin',
       });
     });
   });
@@ -50,7 +51,9 @@ describe('LookupService', () => {
       await service.updateBeUnder(1, { beUnder: 'RS Promotion' }, 'admin');
 
       expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_UpdateBeUnder', {
-        ID: 1, BE_UNDER: 'RS Promotion', UPDATE_BY: 'admin',
+        ID: 1,
+        BE_UNDER: 'RS Promotion',
+        UPDATE_BY: 'admin',
       });
     });
   });
@@ -62,7 +65,8 @@ describe('LookupService', () => {
       await service.deleteBeUnder(1, 'admin');
 
       expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_DeleteBeUnder', {
-        ID: 1, DELETE_BY: 'admin',
+        ID: 1,
+        DELETE_BY: 'admin',
       });
     });
   });
@@ -86,7 +90,8 @@ describe('LookupService', () => {
       await service.createTag({ tagName: 'นักแสดงนำ' }, 'admin');
 
       expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_CreateTag', {
-        TAG_NAME: 'นักแสดงนำ', CREATE_BY: 'admin',
+        TAG_NAME: 'นักแสดงนำ',
+        CREATE_BY: 'admin',
       });
     });
   });
@@ -98,7 +103,9 @@ describe('LookupService', () => {
       await service.updateTag(1, { tagName: 'นักแสดงสมทบ' }, 'admin');
 
       expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_UpdateTag', {
-        TAG_ID: 1, TAG_NAME: 'นักแสดงสมทบ', UPDATE_BY: 'admin',
+        TAG_ID: 1,
+        TAG_NAME: 'นักแสดงสมทบ',
+        UPDATE_BY: 'admin',
       });
     });
   });
@@ -110,7 +117,8 @@ describe('LookupService', () => {
       await service.deleteTag(1, 'admin');
 
       expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_DeleteTag', {
-        TAG_ID: 1, DELETE_BY: 'admin',
+        TAG_ID: 1,
+        DELETE_BY: 'admin',
       });
     });
   });

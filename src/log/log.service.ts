@@ -6,11 +6,13 @@ export class LogService {
   constructor(private db: DatabaseService) {}
 
   log(userId: number, description: string, actId?: number) {
-    return this.db.executeFirst('sp_AddLog', {
-      U_ID:        userId,
-      ACT_ID:      actId ?? null,
-      DESCRIPTION: description,
-    }).catch(() => null); // ไม่ให้ log error ทำ request พัง
+    return this.db
+      .executeFirst('sp_AddLog', {
+        U_ID: userId,
+        ACT_ID: actId ?? null,
+        DESCRIPTION: description,
+      })
+      .catch(() => null); // ไม่ให้ log error ทำ request พัง
   }
 
   getAll() {

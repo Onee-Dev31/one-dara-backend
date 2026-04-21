@@ -9,10 +9,7 @@ describe('LogService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        LogService,
-        { provide: DatabaseService, useValue: mockDb },
-      ],
+      providers: [LogService, { provide: DatabaseService, useValue: mockDb }],
     }).compile();
 
     service = module.get<LogService>(LogService);
@@ -26,7 +23,9 @@ describe('LogService', () => {
       await service.log(1, 'เพิ่มนักแสดง', 5);
 
       expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_AddLog', {
-        U_ID: 1, ACT_ID: 5, DESCRIPTION: 'เพิ่มนักแสดง',
+        U_ID: 1,
+        ACT_ID: 5,
+        DESCRIPTION: 'เพิ่มนักแสดง',
       });
     });
 
@@ -36,7 +35,9 @@ describe('LogService', () => {
       await service.log(1, 'สร้าง Chart');
 
       expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_AddLog', {
-        U_ID: 1, ACT_ID: null, DESCRIPTION: 'สร้าง Chart',
+        U_ID: 1,
+        ACT_ID: null,
+        DESCRIPTION: 'สร้าง Chart',
       });
     });
 

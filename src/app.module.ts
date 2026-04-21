@@ -17,7 +17,14 @@ import { UserModule } from './user/user.module';
       serveRoot: '/uploads',
       serveStaticOptions: { index: false },
     }),
-    DatabaseModule, LogModule, AuthModule, DaraModule, LookupModule, UserModule, FavoriteModule, ChartModule,
+    DatabaseModule,
+    LogModule,
+    AuthModule,
+    DaraModule,
+    LookupModule,
+    UserModule,
+    FavoriteModule,
+    ChartModule,
   ],
 })
 export class AppModule {}

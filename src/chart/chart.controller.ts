@@ -1,6 +1,14 @@
 import {
-  Body, Controller, Delete, Get, Param,
-  ParseIntPipe, Patch, Post, Request, UseGuards,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -44,14 +52,30 @@ export class ChartController {
 
   @Patch(':chartId')
   @ApiOperation({ summary: 'Update chart name' })
-  updateChart(@Param('chartId', ParseIntPipe) chartId: number, @Body() dto: CreateChartDto, @Request() req: any) {
-    return this.chartService.updateChart(chartId, dto, req.user.id, req.user.username);
+  updateChart(
+    @Param('chartId', ParseIntPipe) chartId: number,
+    @Body() dto: CreateChartDto,
+    @Request() req: any,
+  ) {
+    return this.chartService.updateChart(
+      chartId,
+      dto,
+      req.user.id,
+      req.user.username,
+    );
   }
 
   @Delete(':chartId')
   @ApiOperation({ summary: 'Delete chart' })
-  deleteChart(@Param('chartId', ParseIntPipe) chartId: number, @Request() req: any) {
-    return this.chartService.deleteChart(chartId, req.user.id, req.user.username);
+  deleteChart(
+    @Param('chartId', ParseIntPipe) chartId: number,
+    @Request() req: any,
+  ) {
+    return this.chartService.deleteChart(
+      chartId,
+      req.user.id,
+      req.user.username,
+    );
   }
 
   @Get(':chartId/option')
@@ -62,8 +86,15 @@ export class ChartController {
 
   @Post(':chartId/option')
   @ApiOperation({ summary: 'Add option to chart' })
-  createOption(@Param('chartId', ParseIntPipe) chartId: number, @Request() req: any) {
-    return this.chartService.createOption(chartId, req.user.id, req.user.username);
+  createOption(
+    @Param('chartId', ParseIntPipe) chartId: number,
+    @Request() req: any,
+  ) {
+    return this.chartService.createOption(
+      chartId,
+      req.user.id,
+      req.user.username,
+    );
   }
 
   @Patch(':chartId/option/:optionId')
@@ -73,13 +104,25 @@ export class ChartController {
     @Body() dto: UpdateOptionDto,
     @Request() req: any,
   ) {
-    return this.chartService.updateOption(optionId, dto, req.user.id, req.user.username);
+    return this.chartService.updateOption(
+      optionId,
+      dto,
+      req.user.id,
+      req.user.username,
+    );
   }
 
   @Delete(':chartId/option/:optionId')
   @ApiOperation({ summary: 'Delete option from chart' })
-  deleteOption(@Param('optionId', ParseIntPipe) optionId: number, @Request() req: any) {
-    return this.chartService.deleteOption(optionId, req.user.id, req.user.username);
+  deleteOption(
+    @Param('optionId', ParseIntPipe) optionId: number,
+    @Request() req: any,
+  ) {
+    return this.chartService.deleteOption(
+      optionId,
+      req.user.id,
+      req.user.username,
+    );
   }
 
   @Get('option/:optionId/actor')
@@ -90,8 +133,17 @@ export class ChartController {
 
   @Post('option/:optionId/actor')
   @ApiOperation({ summary: 'Add actor to option' })
-  addActor(@Param('optionId', ParseIntPipe) optionId: number, @Body() dto: AddActorDto, @Request() req: any) {
-    return this.chartService.addActor(optionId, dto, req.user.id, req.user.username);
+  addActor(
+    @Param('optionId', ParseIntPipe) optionId: number,
+    @Body() dto: AddActorDto,
+    @Request() req: any,
+  ) {
+    return this.chartService.addActor(
+      optionId,
+      dto,
+      req.user.id,
+      req.user.username,
+    );
   }
 
   @Patch('option/:optionId/actor/:optActId')
@@ -101,24 +153,52 @@ export class ChartController {
     @Body() dto: UpdateActorPositionDto,
     @Request() req: any,
   ) {
-    return this.chartService.updateActorPosition(optActId, dto, req.user.id, req.user.username);
+    return this.chartService.updateActorPosition(
+      optActId,
+      dto,
+      req.user.id,
+      req.user.username,
+    );
   }
 
   @Delete('option/:optionId/actor/:optActId')
   @ApiOperation({ summary: 'Remove actor from option' })
-  removeActor(@Param('optActId', ParseIntPipe) optActId: number, @Request() req: any) {
-    return this.chartService.removeActor(optActId, req.user.id, req.user.username);
+  removeActor(
+    @Param('optActId', ParseIntPipe) optActId: number,
+    @Request() req: any,
+  ) {
+    return this.chartService.removeActor(
+      optActId,
+      req.user.id,
+      req.user.username,
+    );
   }
 
   @Post('option/:optionId/share')
   @ApiOperation({ summary: 'Share option with user' })
-  shareChart(@Param('optionId', ParseIntPipe) optionId: number, @Body() dto: ShareChartDto, @Request() req: any) {
-    return this.chartService.shareChart(optionId, dto, req.user.id, req.user.username);
+  shareChart(
+    @Param('optionId', ParseIntPipe) optionId: number,
+    @Body() dto: ShareChartDto,
+    @Request() req: any,
+  ) {
+    return this.chartService.shareChart(
+      optionId,
+      dto,
+      req.user.id,
+      req.user.username,
+    );
   }
 
   @Delete('share/:shareId')
   @ApiOperation({ summary: 'Unshare chart' })
-  unshareChart(@Param('shareId', ParseIntPipe) shareId: number, @Request() req: any) {
-    return this.chartService.unshareChart(shareId, req.user.id, req.user.username);
+  unshareChart(
+    @Param('shareId', ParseIntPipe) shareId: number,
+    @Request() req: any,
+  ) {
+    return this.chartService.unshareChart(
+      shareId,
+      req.user.id,
+      req.user.username,
+    );
   }
 }

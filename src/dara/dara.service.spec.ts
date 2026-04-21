@@ -36,7 +36,9 @@ describe('DaraService', () => {
 
       const result = await service.findAll();
 
-      expect(mockDb.execute).toHaveBeenCalledWith('sp_GetActors', { Search: null });
+      expect(mockDb.execute).toHaveBeenCalledWith('sp_GetActors', {
+        Search: null,
+      });
       expect(result).toHaveLength(1);
     });
 
@@ -45,7 +47,9 @@ describe('DaraService', () => {
 
       await service.findAll('สมหญิง');
 
-      expect(mockDb.execute).toHaveBeenCalledWith('sp_GetActors', { Search: 'สมหญิง' });
+      expect(mockDb.execute).toHaveBeenCalledWith('sp_GetActors', {
+        Search: 'สมหญิง',
+      });
     });
   });
 
@@ -57,7 +61,9 @@ describe('DaraService', () => {
 
       const result = await service.findOne(1);
 
-      expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_GetActorById', { ACT_ID: 1 });
+      expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_GetActorById', {
+        ACT_ID: 1,
+      });
       expect(result).toEqual(actor);
     });
 
@@ -77,11 +83,18 @@ describe('DaraService', () => {
       const dto = { nameTh: 'สมหญิง', displayName: 'สมหญิง ใจดี' } as any;
       const result = await service.create(dto, 1, 'admin');
 
-      expect(mockDb.executeFirst).toHaveBeenCalledWith('sp_CreateActor', expect.objectContaining({
-        F_NAME_TH: 'สมหญิง',
-        CREATE_BY: 'admin',
-      }));
-      expect(mockLog.log).toHaveBeenCalledWith(1, expect.stringContaining('เพิ่มนักแสดง'), 10);
+      expect(mockDb.executeFirst).toHaveBeenCalledWith(
+        'sp_CreateActor',
+        expect.objectContaining({
+          F_NAME_TH: 'สมหญิง',
+          CREATE_BY: 'admin',
+        }),
+      );
+      expect(mockLog.log).toHaveBeenCalledWith(
+        1,
+        expect.stringContaining('เพิ่มนักแสดง'),
+        10,
+      );
       expect(result).toEqual(newActor);
     });
   });
@@ -90,24 +103,34 @@ describe('DaraService', () => {
   describe('update', () => {
     it('แก้ไขนักแสดง — call SP และ log', async () => {
       mockDb.executeFirst
-        .mockResolvedValueOnce({ ACT_ID: 1 })   // findOne
+        .mockResolvedValueOnce({ ACT_ID: 1 }) // findOne
         .mockResolvedValueOnce({ AffectedRows: 1 }); // update
 
       const dto = { nameTh: 'สมชาย' } as any;
       await service.update(1, dto, 2, 'admin');
 
-      expect(mockDb.executeFirst).toHaveBeenNthCalledWith(2, 'sp_UpdateActor', expect.objectContaining({
-        ACT_ID: 1,
-        F_NAME_TH: 'สมชาย',
-        UPDATE_BY: 'admin',
-      }));
-      expect(mockLog.log).toHaveBeenCalledWith(2, expect.stringContaining('#1'), 1);
+      expect(mockDb.executeFirst).toHaveBeenNthCalledWith(
+        2,
+        'sp_UpdateActor',
+        expect.objectContaining({
+          ACT_ID: 1,
+          F_NAME_TH: 'สมชาย',
+          UPDATE_BY: 'admin',
+        }),
+      );
+      expect(mockLog.log).toHaveBeenCalledWith(
+        2,
+        expect.stringContaining('#1'),
+        1,
+      );
     });
 
     it('แก้ไขนักแสดง — ไม่พบ → NotFoundException', async () => {
       mockDb.executeFirst.mockResolvedValue(null);
 
-      await expect(service.update(999, {} as any, 1, 'admin')).rejects.toThrow(NotFoundException);
+      await expect(service.update(999, {} as any, 1, 'admin')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -124,13 +147,19 @@ describe('DaraService', () => {
         ACT_ID: 1,
         DELETE_BY: 'admin',
       });
-      expect(mockLog.log).toHaveBeenCalledWith(1, expect.stringContaining('#1'), 1);
+      expect(mockLog.log).toHaveBeenCalledWith(
+        1,
+        expect.stringContaining('#1'),
+        1,
+      );
     });
 
     it('ลบนักแสดง — ไม่พบ → NotFoundException', async () => {
       mockDb.executeFirst.mockResolvedValue(null);
 
-      await expect(service.remove(999, 1, 'admin')).rejects.toThrow(NotFoundException);
+      await expect(service.remove(999, 1, 'admin')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -143,12 +172,20 @@ describe('DaraService', () => {
 
       await service.updatePhoto(1, 'actor-123.jpg', 1, 'admin');
 
-      expect(mockDb.executeFirst).toHaveBeenNthCalledWith(2, 'sp_UpdateActorPhoto', {
-        ACT_ID:    1,
-        IMAGE:     'actor-123.jpg',
-        UPDATE_BY: 'admin',
-      });
-      expect(mockLog.log).toHaveBeenCalledWith(1, expect.stringContaining('#1'), 1);
+      expect(mockDb.executeFirst).toHaveBeenNthCalledWith(
+        2,
+        'sp_UpdateActorPhoto',
+        {
+          ACT_ID: 1,
+          IMAGE: 'actor-123.jpg',
+          UPDATE_BY: 'admin',
+        },
+      );
+      expect(mockLog.log).toHaveBeenCalledWith(
+        1,
+        expect.stringContaining('#1'),
+        1,
+      );
     });
   });
 });

@@ -1,5 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { ApiErrorResponse } from '../common/dto/api-response.dto';
 import { Public } from '../common/decorators/public.decorator';
 import { AuthService } from './auth.service';
@@ -17,7 +22,10 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ summary: 'Login and get JWT token' })
   @ApiOkResponse({ type: LoginResponseDto })
-  @ApiUnauthorizedResponse({ type: ApiErrorResponse, description: 'Invalid credentials' })
+  @ApiUnauthorizedResponse({
+    type: ApiErrorResponse,
+    description: 'Invalid credentials',
+  })
   login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
   }
@@ -25,7 +33,11 @@ export class AuthController {
   @Public()
   @Post('forgot-password')
   @ApiOperation({ summary: 'Request password reset link via email' })
-  @ApiOkResponse({ schema: { example: { message: 'If this email exists, a reset link has been sent.' } } })
+  @ApiOkResponse({
+    schema: {
+      example: { message: 'If this email exists, a reset link has been sent.' },
+    },
+  })
   forgotPassword(@Body() dto: ForgotPasswordDto) {
     return this.authService.forgotPassword(dto.email);
   }
@@ -33,7 +45,9 @@ export class AuthController {
   @Public()
   @Post('reset-password')
   @ApiOperation({ summary: 'Reset password using token from email' })
-  @ApiOkResponse({ schema: { example: { message: 'Password reset successful' } } })
+  @ApiOkResponse({
+    schema: { example: { message: 'Password reset successful' } },
+  })
   resetPassword(@Body() dto: ResetPasswordDto) {
     return this.authService.resetPassword(dto.token, dto.newPassword);
   }

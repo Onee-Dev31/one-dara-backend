@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DatabaseService } from '../database/database.service';
 import { LoginDto } from './dto/login.dto';
@@ -22,7 +26,7 @@ export class AuthService {
     }>('sp_Login', { U_NAME: dto.username });
 
     if (!user) {
-      console.log(`---`)
+      console.log(`---`);
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -30,7 +34,11 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = { sub: user.U_ID, username: user.U_NAME, role: user.U_ROLE };
+    const payload = {
+      sub: user.U_ID,
+      username: user.U_NAME,
+      role: user.U_ROLE,
+    };
     return {
       access_token: this.jwtService.sign(payload),
       user: {
@@ -57,18 +65,22 @@ export class AuthService {
   }
 
   async resetPassword(token: string, newPassword: string) {
-    const result = await this.db.executeFirst<{ SUCCESS: number; REASON: string }>(
-      'sp_UseResetToken',
-      { TOKEN: token, NEW_PASS: newPassword },
-    );
+    const result = await this.db.executeFirst<{
+      SUCCESS: number;
+      REASON: string;
+    }>('sp_UseResetToken', { TOKEN: token, NEW_PASS: newPassword });
 
     if (!result || result.SUCCESS !== 1) {
       const messages: Record<string, string> = {
-        TOKEN_NOT_FOUND:    'Invalid token',
+        TOKEN_NOT_FOUND: 'Invalid token',
         TOKEN_ALREADY_USED: 'Token has already been used',
-        TOKEN_EXPIRED:      'Token has expired',
+        TOKEN_EXPIRED: 'Token has expired',
       };
-      throw new BadRequestException(result?.REASON ? (messages[result.REASON] ?? 'Invalid token') : 'Invalid token');
+      throw new BadRequestException(
+        result?.REASON
+          ? (messages[result.REASON] ?? 'Invalid token')
+          : 'Invalid token',
+      );
     }
 
     return { message: 'Password reset successful' };
