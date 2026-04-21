@@ -97,6 +97,11 @@
     ],
     "coverageDirectory": "../coverage",
     "coverageReporters": ["text-summary", "json-summary"],
+    "coverageThreshold": {
+      "global": {
+        "lines": 80
+      }
+    },
     "testEnvironment": "node"
   }
 }

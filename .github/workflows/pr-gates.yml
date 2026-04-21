@@ -46,32 +46,20 @@ jobs:
       - name: Run tests with coverage
         id: cov
         run: |
-          npm run test:cov 2>&1 | tee test-output.txt || true
-
-          if grep -q "^FAIL" test-output.txt; then
-            echo "Tests failed"
-            exit 1
-          fi
+          npm run test:cov 2>&1 | tee test-output.txt
+          # jest exits non-zero if tests fail OR coverage < threshold (coverageThreshold in package.json)
 
           SUMMARY_JSON="coverage/coverage-summary.json"
-          if [ ! -f "$SUMMARY_JSON" ]; then
-            echo "coverage-summary.json not found"
-            exit 1
-          fi
-
-          LINES_PCT=$(python3 -c "import json; d=json.load(open('$SUMMARY_JSON'))['total']; print(d['lines']['pct'])")
-          STMTS_PCT=$(python3 -c "import json; d=json.load(open('$SUMMARY_JSON'))['total']; print(d['statements']['pct'])")
-          BRANCH_PCT=$(python3 -c "import json; d=json.load(open('$SUMMARY_JSON'))['total']; print(d['branches']['pct'])")
-          FUNCS_PCT=$(python3 -c "import json; d=json.load(open('$SUMMARY_JSON'))['total']; print(d['functions']['pct'])")
-
-          echo "lines_pct=$LINES_PCT" >> "$GITHUB_OUTPUT"
-          SUMMARY_ENCODED="Statements: ${STMTS_PCT}% | Branches: ${BRANCH_PCT}% | Functions: ${FUNCS_PCT}% | Lines: ${LINES_PCT}%"
-          echo "summary=$SUMMARY_ENCODED" >> "$GITHUB_OUTPUT"
-
-          LINES_INT=$(echo "$LINES_PCT" | cut -d. -f1)
-          if [ "${LINES_INT:-0}" -lt 80 ]; then
-            echo "Coverage ${LINES_PCT}% is below the required 80% threshold"
-            exit 1
+          if [ -f "$SUMMARY_JSON" ]; then
+            LINES_PCT=$(node -e "const d=require('./$SUMMARY_JSON').total; console.log(d.lines.pct)")
+            STMTS_PCT=$(node -e "const d=require('./$SUMMARY_JSON').total; console.log(d.statements.pct)")
+            BRANCH_PCT=$(node -e "const d=require('./$SUMMARY_JSON').total; console.log(d.branches.pct)")
+            FUNCS_PCT=$(node -e "const d=require('./$SUMMARY_JSON').total; console.log(d.functions.pct)")
+            echo "lines_pct=$LINES_PCT" >> "$GITHUB_OUTPUT"
+            echo "summary=Statements: ${STMTS_PCT}% | Branches: ${BRANCH_PCT}% | Functions: ${FUNCS_PCT}% | Lines: ${LINES_PCT}%" >> "$GITHUB_OUTPUT"
+          else
+            echo "lines_pct=N/A" >> "$GITHUB_OUTPUT"
+            echo "summary=Coverage data unavailable" >> "$GITHUB_OUTPUT"
           fi
 
   # --- Gate 3: Security Audit ------------------------------------------------
